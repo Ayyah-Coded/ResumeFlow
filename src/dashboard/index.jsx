@@ -4,7 +4,7 @@ import { useUser } from '@clerk/react'
 import AddResume from './components/AddResume'
 import ResumeCardItem from './components/ResumeCardItem';
 
-import GlobalApi from '@/service/GlobalApi';
+import GlobalApi from '@/services/GlobalApi';
 
 function Dashboard() {
 
@@ -12,7 +12,7 @@ function Dashboard() {
 
   const [ resumeList, setResumeList ] = useState([]);
 
-  useEffect(() => { user & GetResumesList()},[user])
+  useEffect(() => { user && GetResumesList()}, [user])
 
 
   function GetResumesList () {
@@ -31,7 +31,7 @@ function Dashboard() {
           ? resumeList.map((resume,index) => (
             <ResumeCardItem resume = {resume} key = {index} refreshData = {GetResumesList} /> ))
           : [1,2,3,4].map((item,index) => (
-            <div className='h-[280px] rounded-lg bg-slate-200 animate-pulse'></div>
+            <div key={index} className='h-[280px] rounded-lg bg-slate-200 animate-pulse'></div>
             ))
         }
       </div>

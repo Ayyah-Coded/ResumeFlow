@@ -1,7 +1,7 @@
 import { useParams } from 'react-router-dom';
 import { useContext, useEffect, useState } from 'react';
 
-import GlobalApi from '@/service/GlobalApi';
+import GlobalApi from '@/services/GlobalApi';
 import { AIChatSession } from '@/services/AIModel';
 
 import { ResumeInfoContext } from '@/context/ResumeInfoContext';
@@ -16,45 +16,59 @@ const prompt="Job Title: {jobTitle} , Depends on job title give me list of  summ
 function Summary ({ enabledNext }) {
   const { resumeInfo, setResumeInfo } = useContext(ResumeInfoContext);
 
-  const [ summary, setSummary ] = useState();
+  const [ summary, setSummary ] = useState("");
   const [ loading, setLoading ] = useState(false);
   
-  const params = useParams();
+  const { resumeId } = useParams();
   
-  const [ aiGeneratedSummaryList, setAiGenerateSummaryList ] = useState();
+  const [ aiGeneratedSummaryList, setAiGenerateSummaryList ] = useState([]);
   
   useEffect(() => {
-    summary && setResumeInfo({
-      ...resumeInfo,
-      summary:summary
-    })
-  },[summary])
+    setResumeInfo(prev => ({
+      ...prev,
+      summary,
+    }));
+  }, [summary, setResumeInfo]);
 
   const GenerateSummaryFromAI = async () => {
-    setLoading(true)
-    const PROMPT = prompt.replace('{jobTitle}', resumeInfo?.jobTitle);
-    const result = await AIChatSession.sendMessage(PROMPT);
-    
-    setAiGenerateSummaryList(JSON.parse(result.response.text()))
-    setLoading(false);
-  }
+    if (!resumeInfo?.jobTitle) {
+      toast.error("Please enter a job title first.");
+      return;
+    };
 
-  const onSave=(e)=>{
+    setLoading(true);
+
+    const PROMPT = prompt.replace('{jobTitle}', resumeInfo?.jobTitle);
+    
+
+    try {
+      const result = await AIChatSession.sendMessage(PROMPT);
+      setAiGenerateSummaryList(JSON.parse(result.response.text()));
+    } catch (e) {
+      toast.error('Failed to generate summary, please try again');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const onSave = async (e) => {
     e.preventDefault();    
     setLoading(true)
 
     const data={
-      data:{ summary:summary }
+      data:{ summary }
     };
 
-    GlobalApi.UpdateResumeDetail(params?.resumeId,data).then( () => {
+    try {
+      await GlobalApi.UpdateResumeDetail( resumeId, data);
       enabledNext(true);
+      toast.success("Details updated")
+    } catch (error) {
+      toast.error("Failed to update details");
+    } finally {
       setLoading(false);
-      toast("Details updated")
-    }, ()=>{
-      setLoading(false);
-    });
     }
+  };
   return (
     <div>
       <div className='p-5 shadow-lg rounded-lg border-t-primary border-t-4 mt-10'>
@@ -76,7 +90,6 @@ function Summary ({ enabledNext }) {
           </div>
           <Textarea 
             className="mt-5" required value = {summary}
-            defaultValue = {summary ? summary : resumeInfo?.summery}
             onChange = { (e) => setSummary(e.target.value)}
           />
           <div className='mt-2 flex justify-end'>
@@ -87,20 +100,20 @@ function Summary ({ enabledNext }) {
         </form>
       </div>
 
-      {aiGeneratedSummaryList && 
+      {aiGeneratedSummaryList.length > 0 && 
         <div className='my-5'>
           <h2 className='font-bold text-lg'>
             Suggestions
           </h2>
-          {aiGeneratedSummaryList?.map( (item,index) => (
+          {aiGeneratedSummaryList.map( (item,index) => (
             <div key={index} onClick = {() => setSummary(item?.summary)} className='p-5 shadow-lg my-4 rounded-lg cursor-pointer'>
               <h2 className='font-bold my-1 text-primary'>
-                Level: {item?.experience_level}
+                Level: {item.experience_level}
               </h2>
-              <p>{item?.summary}</p>
+              <p>{item.summary}</p>
             </div>
-          ))};
-        </div>};
+          ))}
+        </div>}
     </div>
   );
 };

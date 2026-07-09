@@ -6,6 +6,7 @@ import GlobalApi from '@/services/GlobalApi';
 import FormSection from '../../components/FormSection';
 import ResumePreview from '../../components/ResumePreview';
 import { ResumeInfoContext } from '@/context/ResumeInfoContext';
+import { toast } from 'sonner';
 
 
 function EditResume() {
@@ -15,12 +16,14 @@ function EditResume() {
     const GetResumeInfo = () => {
       GlobalApi.GetResumeById(resumeId).then( resp => {
         setResumeInfo(resp.data.data);
-      })
+      }, () => {
+        toast('Unable to load resume');
+      });
     };
 
     useEffect( () => {       
       GetResumeInfo();
-    },[])
+    },[resumeId]);
 
 
 

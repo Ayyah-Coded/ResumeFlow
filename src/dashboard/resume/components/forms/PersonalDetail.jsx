@@ -46,6 +46,7 @@ function PersonalDetail ({ enabledNext }) {
       toast( "Details updated" )
     }, () => {
       setLoading(false);
+      toast("Server Error, Please try again!");
     });
   };
   return (

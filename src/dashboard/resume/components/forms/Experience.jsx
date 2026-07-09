@@ -22,7 +22,9 @@ const formField = {
 }
 
 function Experience () {
-  const [ experienceList, setExperienceList ] = useState([]);
+  const [ experienceList, setExperienceList ] = useState(
+    resumeInfo?.Experience?.length ? resumeInfo.Experience : []
+  );
   const [ loading, setLoading ] = useState(false);
 
   const { resumeInfo, setResumeInfo } = useContext(ResumeInfoContext);
@@ -45,7 +47,7 @@ function Experience () {
   };
 
   const AddNewExperience = () => {  
-    setExperienceList([...experienceList, { formField }])
+    setExperienceList([...experienceList, { ...formField }]);
   };
 
   const RemoveExperience = () => {
@@ -124,7 +126,7 @@ function Experience () {
             </div>
           </div>
         </div>
-      ))};
+      ))}
 
       </div>
         <div className='flex justify-between'>

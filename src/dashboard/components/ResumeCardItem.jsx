@@ -8,7 +8,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 
-import GlobalApi from '@/service/GlobalApi'
+import GlobalApi from '@/services/GlobalApi'
 import { toast } from 'sonner'
 
 function ResumeCardItem ({ resume,refreshData }) {
@@ -37,7 +37,7 @@ function ResumeCardItem ({ resume,refreshData }) {
         >
           <div className ='flex items-center justify-center h-[180px] '>
             {/* <Notebook/> */}
-            <img src ="/cv.png" width={80} height={80} />
+            <img src ="/cv.png" width={80} height={80} alt="CV" />
           </div>
         </div>
       </Link>
@@ -66,13 +66,12 @@ function ResumeCardItem ({ resume,refreshData }) {
       </DropdownMenuContent>
       </DropdownMenu>
 
-      <AlertDialog open={openAlert}>    
+      <AlertDialog open={openAlert} onOpenChange={setOpenAlert}>    
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete your account
-              and remove your data from our servers.
+              This action cannot be undone. This will permanently delete this resume from our servers.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

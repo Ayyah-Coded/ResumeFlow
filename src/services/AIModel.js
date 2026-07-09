@@ -1,12 +1,8 @@
-import { GoogleGenerativeAI } from "@google/genai";
+import { GoogleGenAI  } from "@google/genai";
 
   
 const apiKey =import.meta.env.VITE_GOOGLE_AI_API_KEY;
-const genAI = new GoogleGenerativeAI(apiKey);
-
-const model = genAI.getGenerativeModel({
-  model: "gemini-2.5-flash",
-});
+const ai = new GoogleGenAI ({ apiKey });
 
 const generationConfig = {
   temperature: 0.6,
@@ -16,24 +12,10 @@ const generationConfig = {
   responseMimeType: "application/json",
 };
 
-export const AIChatSession = model.startChat({
-  generationConfig,
+export const AIChatSession = ai.chats.create({
+  model: "gemini-2.5-flash",
+  config: generationConfig,
   history: [
-    {
-      role: "user",
-      parts: [
-        {
-          text: "You are a professional resume writer."
-        }
-      ]
-    },
-    {
-      role: "model",
-      parts: [
-        {
-          text: "Understood. I'll generate ATS-friendly resumes."
-        }
-      ]
-    }
+
   ]
 });

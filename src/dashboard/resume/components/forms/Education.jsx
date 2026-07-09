@@ -2,7 +2,7 @@ import { useContext, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 import { ResumeInfoContext } from '@/context/ResumeInfoContext';
-import GlobalApi from '@/service/GlobalApi';
+import GlobalApi from '@/services/GlobalApi';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -85,7 +85,7 @@ function Education () {
 
     <div>
       {educationalList.map((item,index)=>(
-        <div>
+        <div key={index}>
           <div className='grid grid-cols-2 gap-3 border p-3 my-5 rounded-lg'>
             <div className='col-span-2'>
               <label>University Name</label>

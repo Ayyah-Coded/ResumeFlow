@@ -25,11 +25,16 @@ function RichTextEditor ({ onRichTextEditorChange, index, defaultValue }) {
 
       const prompt = PROMPT.replace('{positionTitle}', resumeInfo.Experience[index].title);
       
-      const result = await AIChatSession.sendMessage(prompt);
-      const res = JSON.parse(result.response.text());
-
-      setValue(res[0,1,2,3,4]);
-      setLoading(false);
+      try {
+        const result = await AIChatSession.sendMessage(prompt);
+        const generatedText = result.response.text();
+        setValue(generatedText);
+        onRichTextEditorChange({ target: { value: generatedText } });
+      } catch (error) {
+        toast('Failed to generate summary. Please try again.');
+      } finally {
+        setLoading(false);
+      }
     }
   return (
     <div>
