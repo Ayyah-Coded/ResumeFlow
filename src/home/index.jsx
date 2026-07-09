@@ -1,8 +1,12 @@
+import Header from "@/components/custom/Header"
 
 
 function HomePage() {
   return (
-    <div>HomePage</div>
+    <div>
+      <Header/>
+      Landing Page
+    </div>
   )
 }
 
