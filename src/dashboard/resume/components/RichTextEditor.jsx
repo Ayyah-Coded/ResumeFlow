@@ -8,7 +8,8 @@ import { toast } from 'sonner';
 
 import { BtnBold, BtnBulletList, BtnItalic, BtnLink, BtnNumberedList, BtnStrikeThrough, BtnUnderline, Editor, EditorProvider, Separator, Toolbar } from 'react-simple-wysiwyg'
 
-const PROMPT='position titile: {positionTitle} , Depends on position title give me 5-7 bullet points for my experience in resume (Please do not add experince level and No JSON array) , give me result in HTML tags'
+import { EXPERIENCE_PROMPT } from "@/prompts/experience.prompt";
+
 
 function RichTextEditor ({ onRichTextEditorChange, index, defaultValue }) {
     const [ value, setValue ] = useState(defaultValue);
@@ -23,7 +24,7 @@ function RichTextEditor ({ onRichTextEditorChange, index, defaultValue }) {
       }
       setLoading(true);
 
-      const prompt = PROMPT.replace('{positionTitle}', resumeInfo.Experience[index].title);
+      const prompt = EXPERIENCE_PROMPT.replace('{positionTitle}', resumeInfo.Experience[index].title);
       
       try {
         const result = await AIChatSession.sendMessage(prompt);

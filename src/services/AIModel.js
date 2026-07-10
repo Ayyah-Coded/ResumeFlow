@@ -15,7 +15,5 @@ const generationConfig = {
 export const AIChatSession = ai.chats.create({
   model: "gemini-2.5-flash",
   config: generationConfig,
-  history: [
-
-  ]
+  history: []
 });

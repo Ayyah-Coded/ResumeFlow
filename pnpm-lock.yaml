@@ -53,6 +53,9 @@ importers:
       react-simple-wysiwyg:
         specifier: ^3.4.1
         version: 3.4.1(react@19.2.7)
+      react-web-share:
+        specifier: ^2.0.2
+        version: 2.0.2(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       shadcn:
         specifier: ^4.13.0
         version: 4.13.0
@@ -1979,6 +1982,12 @@ packages:
     resolution: {integrity: sha512-amppNS/WiUSURSFXg9evcRjRBwK6pf5LRWDACVZT/q4k2TginjNxegxM0T2s2LYulbRFS4eGwO7nv57OskckHw==}
     peerDependencies:
       react: '>=16.8'
+
+  react-web-share@2.0.2:
+    resolution: {integrity: sha512-bGm1TJc6xtC0MhAnYFsrzT4En7l2oAdLTgCK7nk7b4xGTg3L5gOldiPrmYQ8a/dEXNydgekvOj/tfjduIlIRVA==}
+    peerDependencies:
+      react: ^16 || ^17 || ^18
+      react-dom: ^16 || ^17 || ^18
 
   react@19.2.7:
     resolution: {integrity: sha512-HNe9WslTbXmFK8o8cmwgAeJFSBvt1bPdHCVKtaaV+WlAN36mpT4hcRpwbf3fY56ar2oIXzsBpOAiIRHAdY0OlQ==}
@@ -4128,6 +4137,11 @@ snapshots:
   react-simple-wysiwyg@3.4.1(react@19.2.7):
     dependencies:
       react: 19.2.7
+
+  react-web-share@2.0.2(react-dom@19.2.7(react@19.2.7))(react@19.2.7):
+    dependencies:
+      react: 19.2.7
+      react-dom: 19.2.7(react@19.2.7)
 
   react@19.2.7: {}
 

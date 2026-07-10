@@ -11,7 +11,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Brain, LoaderCircle } from 'lucide-react';
 import { toast } from 'sonner';
 
-const prompt="Job Title: {jobTitle} , Depends on job title give me list of  summary for 3 experience level, Mid Level and Entry level in 5-7 lines in array format, With summary and experience_level Field in JSON Format"
+import { SUMMARY_PROMPT } from "@/prompts/summary.prompt";
+
 
 function Summary ({ enabledNext }) {
   const { resumeInfo, setResumeInfo } = useContext(ResumeInfoContext);
@@ -38,7 +39,7 @@ function Summary ({ enabledNext }) {
 
     setLoading(true);
 
-    const PROMPT = prompt.replace('{jobTitle}', resumeInfo?.jobTitle);
+    const PROMPT = SUMMARY_PROMPT.replace('{jobTitle}', resumeInfo?.jobTitle);
     
 
     try {

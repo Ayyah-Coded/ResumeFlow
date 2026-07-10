@@ -30,14 +30,14 @@ function ResumeCardItem ({ resume,refreshData }) {
   }
   return (    
     <div className =''>
-      <Link to={'/dashboard/resume/'+resume.documentId+"/edit"}>
+      <Link to={`/dashboard/resume/${resume.documentId}/edit`}>
         <div 
-          className ='p-14 bg-secondary flex items-center justify-center h-[280px] border border-primary rounded-lg hover:scale-105 transition-all hover:shadow-md shadow-primary'
+          className ='p-14 bg-gradient-to-b from-pink-100 via-purple-200 to-blue-200 flex items-center justify-center h-[280px] border-t-4 rounded-lg hover:scale-105 transition-all hover:shadow-md shadow-primary'
           style = {{ borderColor: resume?.themeColor }}
         >
           <div className ='flex items-center justify-center h-[180px] '>
             {/* <Notebook/> */}
-            <img src ="/cv.png" width={80} height={80} alt="CV" />
+            <img src ="/cv.png" width={80} height={80} alt="CV image" />
           </div>
         </div>
       </Link>
@@ -47,23 +47,23 @@ function ResumeCardItem ({ resume,refreshData }) {
     >
       <h2 className ='text-sm'>{resume.title}</h2>      
       <DropdownMenu>
-      <DropdownMenuTrigger>
-        <MoreVertical className ='h-4 w-4 cursor-pointer'/>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent>        
-        <DropdownMenuItem  onClick = {() => navigation('/dashboard/resume/'+resume.documentId+"/edit")}>
-          Edit
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick = {() => navigation('/my-resume/'+resume.documentId+"/view")}>
-          View
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick = {() => navigation('/my-resume/'+resume.documentId+"/view")}>
-          Download
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick = {() => setOpenAlert(true)}>
-          Delete
-        </DropdownMenuItem>        
-      </DropdownMenuContent>
+        <DropdownMenuTrigger>
+          <MoreVertical className ='h-4 w-4 cursor-pointer'/>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent>        
+          <DropdownMenuItem  onClick = {() => navigation(`/dashboard/resume/${resume.documentId}/edit`)}>
+            Edit
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick = {() => navigation(`/individualresume/${resume.documentId}/display`)}>
+            View
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick = {() => navigation(`/individualresume/${resume.documentId}/display`)}>
+            Download
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick = {() => setOpenAlert(true)}>
+            Delete
+          </DropdownMenuItem>        
+        </DropdownMenuContent>
       </DropdownMenu>
 
       <AlertDialog open={openAlert} onOpenChange={setOpenAlert}>    
