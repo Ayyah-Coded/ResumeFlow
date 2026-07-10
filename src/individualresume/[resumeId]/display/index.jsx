@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { RWebShare } from 'react-web-share';
 
 import GlobalApi from '@/services/GlobalApi'
+import PublicApi from '@/services/PublicApi'
 import { ResumeInfoContext } from '@/context/ResumeInfoContext';
 
 import ResumePreview from '@/dashboard/resume/components/ResumePreview';
@@ -14,15 +15,25 @@ function DisplayResume () {
   const [ resumeInfo, setResumeInfo ] = useState();
   const { resumeId } = useParams();
 
-  const GetResumeInfo = () => {
-    GlobalApi.GetResumeById(resumeId).then(resp=>{
+  const GetResumeInfo = async () => {
+    try {
+      const resp = await PublicApi.GetResumeByIdPublic(resumeId);
       setResumeInfo(resp.data.data);
-    })
+    } catch (err) {
+      console.warn("Public fetch failed, attempting authenticated fetch", err);
+
+      try {
+        const resp = await GlobalApi.GetResumeById(resumeId);
+        setResumeInfo(resp.data.data);
+      } catch (error) {
+        console.error("Authenticated fetch failed", error);
+      }
+    }
   };
   
   useEffect(() => {
     GetResumeInfo();
-  }, []);
+  }, [resumeId]);
 
   const HandleDownload = () => {
     window.print();

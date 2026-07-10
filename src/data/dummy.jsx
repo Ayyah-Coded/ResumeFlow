@@ -20,8 +20,7 @@ export default{
           • Implemented responsive user interfaces with React, ensuring seamless user experiences across
             various devices and browsers.
           • Maintaining the React Native in-house organization application.
-          • CreatedRESTfulAPIs withNode.js and Express,facilitating data communicationbetween the front-end
-            and back-end systems.`
+          • Created RESTful APIs with Node.js and Express, facilitating data communication between the front-end            and back-end systems.`
       },
       {
           id:2,
