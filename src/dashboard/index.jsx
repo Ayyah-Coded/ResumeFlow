@@ -4,14 +4,17 @@ import AddResume from "./components/AddResume";
 import ResumeCardItem from "./components/ResumeCardItem";
 
 import GlobalApi from "@/services/GlobalApi";
+import { useAxiosClient } from "@/hooks/useAxiosClient";
 
 function Dashboard() {
+  const axiosClient = useAxiosClient();
+  const api = GlobalApi(axiosClient);
   const [resumeList, setResumeList] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const getResumesList = useCallback(async () => {
     try {
-      const response = await GlobalApi.getUserResumes();
+      const response = await api.getUserResumes();
 
       setResumeList(response.data.data);
     } catch (error) {
@@ -19,7 +22,7 @@ function Dashboard() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [api]);
 
   useEffect(() => {
     getResumesList();

@@ -1,15 +1,19 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
+import { toast } from 'sonner';
 import GlobalApi from '@/services/GlobalApi';
+import { useAxiosClient } from '@/hooks/useAxiosClient';
 
 import FormSection from '../../components/FormSection';
 import ResumePreview from '../../components/ResumePreview';
 import { ResumeInfoContext } from '@/context/ResumeInfoContext';
-import { toast } from 'sonner';
+import { LoaderCircle } from 'lucide-react';
 
 
 function EditResume() {
+  const axiosClient = useAxiosClient();
+  const api = GlobalApi(axiosClient);
   const { resumeId } = useParams();
   const [ loading, setLoading ] = useState(false);
   const [ resumeInfo, setResumeInfo] = useState();
@@ -22,7 +26,7 @@ function EditResume() {
   try {
     setLoading(true);
 
-    const response = await GlobalApi.getResumeById(resumeId);
+    const response = await api.getResumeById(resumeId);
 
     setResumeInfo(response.data);
   } catch (error) {

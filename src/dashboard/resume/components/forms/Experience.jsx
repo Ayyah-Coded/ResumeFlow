@@ -18,7 +18,7 @@ function Experience ({ enabledNext }) {
   const { resumeInfo, setResumeInfo } = useContext(ResumeInfoContext);
   
   const [ experienceList, setExperienceList ] = useState(
-    resumeInfo?.experience?.length
+    resumeInfo?.experiences?.length
     ? resumeInfo.experiences 
     : [
           {

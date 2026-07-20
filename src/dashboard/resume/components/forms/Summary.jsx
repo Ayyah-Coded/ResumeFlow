@@ -1,5 +1,5 @@
 import { useParams } from 'react-router-dom';
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 
 import GlobalApi from '@/services/GlobalApi';
 import { AIChatSession } from '@/services/AIModel';
@@ -29,6 +29,10 @@ function Summary ({ enabledNext }) {
       summary: e.target.value,
     }));
   };
+
+  useEffect(() => {
+    setSummary(resumeInfo?.summary ?? "");
+  }, [resumeInfo?.summary]);
 
   const generatedSummaryFromAI  = async () => {
     if (!resumeInfo?.jobTitle) {
@@ -60,9 +64,7 @@ function Summary ({ enabledNext }) {
     setLoading(true);
 
     try {
-      await GlobalApi.updateResume(resumeId, {
-        summary: resumeInfo?.summary,
-      });
+      await GlobalApi.updateResume( resumeId, {summary} );
 
       enabledNext(true);
 

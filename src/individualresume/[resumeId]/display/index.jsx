@@ -11,26 +11,28 @@ import Header from '@/components/custom/Header';
 import { Button } from '@/components/ui/button';
 import { useUser } from '@clerk/clerk-react';
 import { toast } from 'sonner';
+import { useAxiosClient } from '@/hooks/useAxiosClient';
 
 function DisplayResume () {
+  const axiosClient = useAxiosClient();
+  const api = GlobalApi(axiosClient);
   const { user } = useUser();
   const [ loading, setLoading ] = useState(false);
   const [ resumeInfo, setResumeInfo ] = useState();
   const { resumeId } = useParams();
 
-
-    const getResumeInfo = async () => {
+  const getResumeInfo = async () => {    
     try {
       setLoading(true);
-      const response = await GlobalApi.getResumeById(resumeId);
+      const response = await api.getResumeById(resumeId);
       setResumeInfo(response.data);
-     } catch (error) {
+      } catch (error) {
       console.error("GET_RESUME_ERROR:", error);
       toast.error("Failed to load resume");
-     } finally {
-       setLoading(false);
-     }
-   };
+      } finally {
+        setLoading(false);
+      }
+  };
 
   useEffect(() => {
   if (user?.primaryEmailAddress?.emailAddress) {
