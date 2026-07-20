@@ -14,22 +14,16 @@ import { toast } from 'sonner'
 
 
 function Skills () {
-  const [loading, setLoading] = useState(false);
-
-  const { resumeInfo, setResumeInfo } = useContext(ResumeInfoContext);
   const { resumeId } = useParams();
+  const [loading, setLoading] = useState(false);
+  const { resumeInfo, setResumeInfo } = useContext(ResumeInfoContext);
+
 
   const [skillsList, setSkillsList] = useState(
     resumeInfo?.skills?.length
       ? resumeInfo.skills
       : [{ name: "", rating: 0 }]
   );
-
-  useEffect(() => {
-    if (resumeInfo?.skills?.length) {
-      setSkillsList(resumeInfo.skills);
-    }
-  }, [resumeInfo?.skills]);
 
   useEffect(() => {
     setResumeInfo(prev => ({
@@ -39,21 +33,19 @@ function Skills () {
   }, [skillsList, setResumeInfo]);
   
   const handleChange = (index, name, value) => {
-    const nextSkills = [...skillsList];
-    nextSkills[index] = {
-      ...nextSkills[index],
-      [name]: value,
-    };
+    setSkillsList((prev) => {
+      const nextSkills = [...prev];
 
-    setSkillsList(nextSkills);
+      nextSkills[index] = {
+        ...nextSkills[index],
+        [name]: value,
+      };
 
-    setResumeInfo(prev => ({
-      ...prev,
-      skills: nextSkills,
-    }));
+      return nextSkills;
+    });
   }
 
-  const AddNewSkills = () => {
+  const addNewSkills = () => {
     setSkillsList(prev => [
       ...prev,
       {
@@ -63,31 +55,41 @@ function Skills () {
     ]);
   };
 
-  const RemoveSkills = () => {
+  const removeSkills = () => {
     setSkillsList(prev =>
       prev.length > 1 ? prev.slice(0, -1) : prev
     );
   };
 
-  const onSave = () => {
+  const onSave = async () => {
+    e.preventDefault();
+
     setLoading(true);
 
-    const data = {
-      data: {skills: skillsList.map( ({ id, ...rest }) => rest)}
-    };
+    try {
+      const skills = skillsList
+        .filter((skill) => skill.name.trim())
+        .map(({ id, resumeId, ...skill }) => skill);
 
-    GlobalApi.UpdateResumeDetail(resumeId, data)
-      .then(() => {
-        toast("Details updated!");
-      })
-      .catch(() => {
-        toast("Server Error, Try again!");
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+      await GlobalApi.updateSkills(
+        resumeId,
+        skills
+      );
+
+      toast.success("Skills updated");
+    } catch (error) {
+      console.error(
+        "UPDATE_SKILLS_ERROR:",
+        error
+      );
+
+      toast.error(
+        "Failed to update skills"
+      );
+    } finally {
+      setLoading(false);
+    }
   };
-
   return (
     <div className='p-5 shadow-lg rounded-lg border-t-primary border-t-4 mt-10'>
       <h2 className='font-bold text-lg'>Skills</h2>
@@ -98,7 +100,7 @@ function Skills () {
           <div key={index} className='flex justify-between mb-2 border rounded-lg p-3 '>
             <div>
               <label className='text-xs'>Name</label>
-              <Input className="w-full" value={item.name} 
+              <Input className="w-full" value={item.name ?? ""} 
                 onChange={(e)=>handleChange(index, 'name', e.target.value)}
               />
             </div>
@@ -108,8 +110,8 @@ function Skills () {
       </div>
       <div className='flex justify-between'>
         <div className='flex gap-2'>
-          <Button variant="outline" onClick={AddNewSkills} className="text-primary"> + Add More Skill</Button>
-          <Button variant="outline" onClick={RemoveSkills}
+          <Button variant="outline" onClick={addNewSkills} className="text-primary"> + Add More Skill</Button>
+          <Button variant="outline" onClick={removeSkills}
             disabled={skillsList.length === 1} className="text-primary"
           >
             - Remove

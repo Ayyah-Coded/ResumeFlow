@@ -3,37 +3,42 @@ import { useParams } from 'react-router-dom';
 import { RWebShare } from 'react-web-share';
 
 import GlobalApi from '@/services/GlobalApi'
-import PublicApi from '@/services/PublicApi'
 import { ResumeInfoContext } from '@/context/ResumeInfoContext';
 
 import ResumePreview from '@/dashboard/resume/components/ResumePreview';
 import Header from '@/components/custom/Header';
 
 import { Button } from '@/components/ui/button';
+import { useUser } from '@clerk/react';
 
 function DisplayResume () {
+  const { user } = useUser();
   const [ resumeInfo, setResumeInfo ] = useState();
   const { resumeId } = useParams();
 
-  const GetResumeInfo = async () => {
-    try {
-      const resp = await PublicApi.GetResumeByIdPublic(resumeId);
-      setResumeInfo(resp.data.data);
-    } catch (err) {
-      console.warn("Public fetch failed, attempting authenticated fetch", err);
+  useEffect(() => {
+  if (user?.primaryEmailAddress?.emailAddress) {
+    GetUserResumeList();
+  }
+  }, [user]);
 
-      try {
-        const resp = await GlobalApi.GetResumeById(resumeId);
-        setResumeInfo(resp.data.data);
-      } catch (error) {
-        console.error("Authenticated fetch failed", error);
-      }
+  const GetUserResumeList = async () => {
+    try {
+      setLoading(true);
+
+      const email = user.primaryEmailAddress.emailAddress;
+
+      const response = await GlobalApi.getUserResumes(email);
+
+      setResumeList(response.data || []);
+    } catch (error) {
+      console.error("GET_USER_RESUMES_ERROR:", error);
+
+      toast.error("Failed to load resumes");
+    } finally {
+      setLoading(false);
     }
   };
-  
-  useEffect(() => {
-    GetResumeInfo();
-  }, [resumeId]);
 
   const HandleDownload = () => {
     window.print();

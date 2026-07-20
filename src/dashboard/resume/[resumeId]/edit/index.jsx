@@ -10,23 +10,37 @@ import { toast } from 'sonner';
 
 
 function EditResume() {
-    const { resumeId } = useParams();
-    const [ resumeInfo, setResumeInfo] = useState();
+  const { resumeId } = useParams();
+  const [ resumeInfo, setResumeInfo] = useState();
+  
+  useEffect( () => {       
+    getResumeInfo();
+  },[resumeId]);
 
-    const GetResumeInfo = () => {
-      GlobalApi.GetResumeById(resumeId).then( resp => {
-        setResumeInfo(resp.data.data);
-      }, () => {
-        toast('Unable to load resume');
-      });
-    };
+  const getResumeInfo = async () => {
+  try {
+    setLoading(true);
 
-    useEffect( () => {       
-      GetResumeInfo();
-    },[resumeId]);
+    const response = await GlobalApi.getResumeById(resumeId);
 
+    setResumeInfo(response.data);
+  } catch (error) {
+    console.error("GET_RESUME_ERROR:", error);
 
+    toast.error("Failed to load resume");
+  } finally {
+    setLoading(false);
+  }
+  };
 
+  if (loading) {
+  return (
+    <div className="flex justify-center items-center min-h-screen">
+      <LoaderCircle className="animate-spin" />
+    </div>
+  );
+  }
+  
   return (
     <ResumeInfoContext.Provider value={{ resumeInfo, setResumeInfo }}>
     <div className='grid grid-cols-1 md:grid-cols-2 p-10 gap-10'>

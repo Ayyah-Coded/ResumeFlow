@@ -12,21 +12,14 @@ import { toast } from 'sonner';
 import { LoaderCircle } from 'lucide-react';
 
 function PersonalDetail ({ enabledNext }) {
-  const params = useParams();
+  const { resumeId } = useParams();
   const { resumeInfo, setResumeInfo } = useContext(ResumeInfoContext);
 
-  const [ formData, setFormData ] = useState();
+  
   const [ loading, setLoading ] = useState(false);
 
-  const handleInputChange = (e) => {
-    enabledNext(false);
-
-    const { name,value } = e.target;
-
-    setFormData({
-      ...formData,
-      [name]:value
-    });
+  const handleChange = (e) => {
+    const { name, value } = e.target;
 
     setResumeInfo({
       ...resumeInfo,
@@ -34,21 +27,34 @@ function PersonalDetail ({ enabledNext }) {
     });
   };
 
-  const onSave = (e) => {
+  const onSave = async (e) => {
     e.preventDefault();
     setLoading(true)
 
-    const data = { data:formData }
+    const data = {
+    firstName: resumeInfo?.firstName,
+    lastName: resumeInfo?.lastName,
+    jobTitle: resumeInfo?.jobTitle,
+    address: resumeInfo?.address,
+    phone: resumeInfo?.phone,
+    email: resumeInfo?.email,
+    };
 
-    GlobalApi.UpdateResumeDetail(params?.resumeId,data).then( () => {
-      enabledNext(true);
+    try {
+    await GlobalApi.updateResume(resumeId, data);
+
+    enabledNext(true);
+
+    toast.success("Personal details updated");
+    } catch (error) {
+      console.error("UPDATE_PERSONAL_DETAILS_ERROR:", error);
+
+      toast.error("Failed to update personal details");
+    } finally {
       setLoading(false);
-      toast( "Details updated" )
-    }, () => {
-      setLoading(false);
-      toast("Server Error, Please try again!");
-    });
+    }
   };
+
   return (
     <div className='p-5 shadow-lg rounded-lg border-t-primary border-t-4 mt-10'>
       <h2 className='font-bold text-lg'>
@@ -60,32 +66,32 @@ function PersonalDetail ({ enabledNext }) {
         <div className='grid grid-cols-2 mt-5 gap-3'>
           <div>
             <label className='text-sm'>First Name</label>
-            <Input name ="firstName" defaultValue ={resumeInfo?.firstName} required onChange = {handleInputChange} />
+            <Input name ="firstName" defaultValue ={resumeInfo?.firstName} required onChange = {handleChange} />
           </div>
 
           <div>
             <label className='text-sm'>Last Name</label>
-            <Input name ="lastName" required onChange = {handleInputChange} defaultValue ={resumeInfo?.lastName} />
+            <Input name ="lastName" required onChange = {handleChange} defaultValue ={resumeInfo?.lastName} />
           </div>
 
           <div className='col-span-2'>
             <label className='text-sm'>Job Title</label>
-            <Input name ="jobTitle" required defaultValue = {resumeInfo?.jobTitle} onChange = {handleInputChange} />
+            <Input name ="jobTitle" required defaultValue = {resumeInfo?.jobTitle} onChange = {handleChange} />
           </div>
 
           <div className='col-span-2'>
             <label className='text-sm'>Address</label>
-            <Input name ="address" required defaultValue = {resumeInfo?.address} onChange = {handleInputChange} />
+            <Input name ="address" required defaultValue = {resumeInfo?.address} onChange = {handleChange} />
           </div>
 
           <div>
             <label className='text-sm'>Phone</label>
-            <Input name="phone" required defaultValue={resumeInfo?.phone} onChange={handleInputChange} />
+            <Input name="phone" required defaultValue={resumeInfo?.phone} onChange={handleChange} />
           </div>
 
           <div>
             <label className='text-sm'>Email</label>
-            <Input name="email" required defaultValue = {resumeInfo?.email} onChange = {handleInputChange} />
+            <Input name="email" required defaultValue = {resumeInfo?.email} onChange = {handleChange} />
           </div>
         </div>
         <div className='mt-3 flex justify-end'>

@@ -15,57 +15,63 @@ import { SUMMARY_PROMPT } from "@/prompts/summary.prompt";
 
 
 function Summary ({ enabledNext }) {
+  const { resumeId } = useParams();
   const { resumeInfo, setResumeInfo } = useContext(ResumeInfoContext);
 
   const [ summary, setSummary ] = useState("");
   const [ loading, setLoading ] = useState(false);
   
-  const { resumeId } = useParams();
+  const [ aiGeneratedSummaryList, setAiGeneratedSummaryList ] = useState([]);
   
-  const [ aiGeneratedSummaryList, setAiGenerateSummaryList ] = useState([]);
-  
-  useEffect(() => {
-    setResumeInfo(prev => ({
+  const handleSummaryChange = (e) => {
+    setResumeInfo((prev) => ({
       ...prev,
-      summary,
+      summary: e.target.value,
     }));
-  }, [summary, setResumeInfo]);
+  };
 
-  const GenerateSummaryFromAI = async () => {
+  const generatedSummaryFromAI  = async () => {
     if (!resumeInfo?.jobTitle) {
       toast.error("Please enter a job title first.");
+
       return;
     };
 
     setLoading(true);
 
-    const PROMPT = SUMMARY_PROMPT.replace('{jobTitle}', resumeInfo?.jobTitle);
+    const prompt  = SUMMARY_PROMPT.replace('{jobTitle}', resumeInfo?.jobTitle);
     
-
     try {
-      const result = await AIChatSession.sendMessage(PROMPT);
-      setAiGenerateSummaryList(JSON.parse(result.response.text()));
+      const result = await AIChatSession.sendMessage(prompt);
+      const generatedSummaries = JSON.parse( result.response.text() );
+
+      setAiGeneratedSummaryList( generatedSummaries );
     } catch (e) {
-      toast.error('Failed to generate summary, please try again');
+        console.error("GENERATE_SUMMARY_ERROR:",  error);
+
+        toast.error("Failed to generate summary, please try again");
     } finally {
       setLoading(false);
     }
   };
 
   const onSave = async (e) => {
-    e.preventDefault();    
-    setLoading(true)
+    e.preventDefault();
 
-    const data={
-      data:{ summary }
-    };
+    setLoading(true);
 
     try {
-      await GlobalApi.UpdateResumeDetail( resumeId, data);
+      await GlobalApi.updateResume(resumeId, {
+        summary: resumeInfo?.summary,
+      });
+
       enabledNext(true);
-      toast.success("Details updated")
+
+      toast.success("Summary updated");
     } catch (error) {
-      toast.error("Failed to update details");
+      console.error("UPDATE_SUMMARY_ERROR:",error);
+
+      toast.error("Failed to update summary");
     } finally {
       setLoading(false);
     }
@@ -81,7 +87,7 @@ function Summary ({ enabledNext }) {
             <label>Add Summary</label>
             <Button 
               variant ="outline" 
-              onClick = { () => GenerateSummaryFromAI() }
+              onClick = { () => generatedSummaryFromAI() }
               type ="button" size="sm" 
               className ="border-primary text-primary flex gap-2"
             > 

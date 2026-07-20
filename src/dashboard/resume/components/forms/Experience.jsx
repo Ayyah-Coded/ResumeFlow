@@ -18,40 +18,79 @@ const formField = {
   state:'',
   startDate:'',
   endDate:'',
-  workSummery:''
+  workSummary:''
 }
 
 function Experience () {
-  const [ experienceList, setExperienceList ] = useState(
-    resumeInfo?.Experience?.length ? resumeInfo.Experience : []
-  );
+  const {resumeId} = useParams();
   const [ loading, setLoading ] = useState(false);
-
   const { resumeInfo, setResumeInfo } = useContext(ResumeInfoContext);
-  const params = useParams();
-
   
-  const handleChange = (index, event) => {
-    const {name,value} = event.target;
-    
-    const nextExperience = [...experienceList];
-    nextExperience[index] = {
-      ...nextExperience[index],
-      [name]: value,
-    };
+  const [ experienceList, setExperienceList ] = useState(
+    resumeInfo?.Experience?.length 
+    ? resumeInfo.Experience 
+    : [
+          {
+            title: "",
+            companyName: "",
+            city: "",
+            state: "",
+            startDate: "",
+            endDate: "",
+            workSummary: "",
+          },
+        ]
+  );
 
-    setResumeInfo(prev => ({
-      ...(prev ?? {}),
-      Experience: nextExperience,
+  useEffect(() => {
+    if (resumeInfo?.experiences?.length) {
+      setExperienceList(resumeInfo.experiences);
+    }
+  }, [resumeInfo?.experiences]);
+
+  useEffect(() => {
+    setResumeInfo((prev) => ({
+      ...prev,
+      experiences: experienceList,
     }));
+  }, [experienceList, setResumeInfo]);
+  
+  const handleChange = (index, name, value) => {
+    setExperienceList((prev) => {
+      const nextExperience = [...prev];
+
+      nextExperience[index] = {
+        ...nextExperience[index],
+        [name]: value,
+      };
+
+      return nextExperience;
+    });
   };
 
-  const AddNewExperience = () => {  
-    setExperienceList([...experienceList, { ...formField }]);
+  const addNewExperience = () => {
+    setExperienceList((prev) => [
+      ...prev,
+      {
+        title: "",
+        companyName: "",
+        city: "",
+        state: "",
+        startDate: "",
+        endDate: "",
+        workSummery: "",
+      },
+    ]);
   };
 
-  const RemoveExperience = () => {
-    setExperienceList( (experienceList) => experienceList.slice(0,-1) );
+  const removeExperience = () => {
+    setExperienceList((prev) => {
+      if (prev.length === 1) {
+        return prev;
+      }
+
+      return prev.slice(0, -1);
+    });
   };
 
   const handleRichTextEditor = (e,name,index) => {
@@ -61,33 +100,38 @@ function Experience () {
     setExperienceList(newEntries);
   };
 
-  useEffect(()=>{
-    setResumeInfo({
-      ...resumeInfo,
-      Experience: experienceList 
-    })},
-    [experienceList]);
-
-  const onSave = () => {
+  const onSave = async (e) => {
+    e.preventDefault();
     setLoading(true)
-    const data={
-      data:{
-          Experience: experienceList.map( ({ id, ...rest }) => rest)
-      }
-    };
+    try {
+      const experiences = experienceList.map(
+        ({ id, resumeId, ...experience }) => experience
+      );
 
-    GlobalApi.UpdateResumeDetail(params?.resumeId,data).then(() => {
+      await GlobalApi.updateExperiences(
+        resumeId,
+        experiences
+      );
+
+      enabledNext(true);
+
+      toast.success("Experience updated");
+    } catch (error) {
+      console.error(
+        "UPDATE_EXPERIENCE_ERROR:",
+        error
+      );
+
+      toast.error("Failed to update experience");
+    } finally {
       setLoading(false);
-      toast('Details updated !')
-    },() => {
-      setLoading(false);
-    });
+    }
   };
   return (
     <div>
       <div className='p-5 shadow-lg rounded-lg border-t-primary border-t-4 mt-10'>
         <h2 className='font-bold text-lg'>Professional Experience</h2>
-        <p>Add Your previous Job experience</p>
+        <p>Add Your Previous Job Experience</p>
       <div>
 
       {experienceList.map( (item,index) => (
@@ -120,8 +164,8 @@ function Experience () {
 
             <div className='col-span-2'>
                 {/* Work Summary  */}
-                <RichTextEditor index={index} defaultValue={item?.workSummery}
-                  onRichTextEditorChange={(event)=>handleRichTextEditor(event,'workSummery',index)}
+                <RichTextEditor index={index} defaultValue={item?.workSummary}
+                  onRichTextEditorChange={(event)=>handleRichTextEditor(event,'workSummary',index)}
                 />
             </div>
           </div>
@@ -131,8 +175,8 @@ function Experience () {
       </div>
         <div className='flex justify-between'>
           <div className='flex gap-2'>
-            <Button variant="outline" onClick={AddNewExperience} className="text-primary"> + Add More Experience</Button>
-            <Button variant="outline" onClick={RemoveExperience} className="text-primary"> - Remove</Button>
+            <Button variant="outline" onClick={addNewExperience} className="text-primary"> + Add More Experience</Button>
+            <Button variant="outline" onClick={removeExperience} className="text-primary"> - Remove</Button>
           </div>
           <Button disabled={loading} onClick = {() => onSave()}>
             {loading

@@ -18,7 +18,7 @@ function ResumeCardItem ({ resume,refreshData }) {
 
   const onDelete = () => {
     setLoading(true);
-    GlobalApi.DeleteResumeById(resume.documentId).then(resp => {
+    GlobalApi.deleteResume(resume.documentId).then(resp => {
       console.log(resp);
       toast('Resume Deleted!');
       refreshData()

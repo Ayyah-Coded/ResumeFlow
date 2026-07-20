@@ -14,38 +14,53 @@ import { toast } from 'sonner';
 
 
 
-function AddResume() {
+async function AddResume() {
+  const { user } = useUser();
+
   const [ openDialog, setOpenDialog ] = useState(false)
   const [ resumeTitle, setResumeTitle ] = useState();
-
   const [ loading, setLoading ] = useState(false);
   
-  const { user } = useUser();
   const navigation = useNavigate();
 
-  const onCreate = async () => {
-    setLoading(true)    
-    const uuid = uuidv4();
+  if (!resumeTitle.trim()) {
+      toast.error("Please enter a resume title");
+      return;
+    }
+
+  if (!user?.primaryEmailAddress?.emailAddress) {
+    toast.error("User email not found");
+    return;
+  }
+
+  setLoading(true);
+
+  const resumeId = uuidv4();
 
   const data = {
-    data: {
-      title: resumeTitle,
-      resumeId: uuid,
-      userEmail: user?.primaryEmailAddress?.emailAddress,
-      userName: user?.fullName
-    }
-  };
+    title: resumeTitle.trim(),
+    resumeId,
+    userEmail: user.primaryEmailAddress.emailAddress,
+    userName: user.fullName,
+  }; 
 
-  GlobalApi.CreateNewResume(data).then( resp => {  
-    if (resp) {
+  try {
+    const onCreate = await GlobalApi.CreateNewResume(data);
+
+    toast.success("Resume created successfully");
+
+    return onCreate;
+    setTitle("");
+    } catch (error) {
+    console.error("CREATE_RESUME_ERROR:", error);
+
+    toast.error(
+      error.response?.data?.message ||
+        "Failed to create resume"
+    );
+    } finally {
       setLoading(false);
-      navigation(`/dashboard/resume/${resp.data.data.documentId}/edit`);
     }
-  },(error) => { 
-    setLoading(false) 
-    toast.error("Failed to create resume. Please try again.")
-  })
-  }
   return (
     <div >
       <div 

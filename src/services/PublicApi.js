@@ -1,6 +1,6 @@
 'use strict';
 
-import axios from 'axios';
+import axios from 'axios'
 
 // Read-only public client that does not include privileged API keys.
 // This should be used only for publicly accessible reads (e.g., public resume display).

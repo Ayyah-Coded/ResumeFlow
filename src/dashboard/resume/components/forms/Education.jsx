@@ -11,80 +11,115 @@ import { Textarea } from '@/components/ui/textarea';
 import { LoaderCircle } from 'lucide-react';
 import { toast } from 'sonner';
 
-const createEducationEntry = () => ({
-  universityName: '',
-  degree: '',
-  major: '',
-  startDate: '',
-  endDate: '',
-  description: '',
-});
 
-function Education () {
+
+function Education() {
+  const {resumeId} = useParams();
   const { resumeInfo, setResumeInfo } = useContext(ResumeInfoContext);
-  const params = useParams();
 
   const [ loading, setLoading ] = useState(false);
-  const educationalList = Array.isArray(resumeInfo?.education) && resumeInfo.education.length > 0
-    ? resumeInfo.education
-    : [createEducationEntry()];
+  
+  const [educationList, setEducationList] = useState(
+    resumeInfo?.education?.length
+      ? resumeInfo.education
+      : [
+          {
+            universityName: "",
+            degree: "",
+            major: "",
+            startDate: "",
+            endDate: "",
+            description: "",
+          },
+        ]
+  );
 
-  const handleChange = (event, index) => {
-    const { name, value } = event.target;
-    const newEntries = educationalList.map((item, itemIndex) =>
-      itemIndex === index ? { ...item, [name]: value } : item
-    );
+  useEffect(() => {
+    if (resumeInfo?.education?.length) {
+      setEducationList(resumeInfo.education);
+    }
+  }, [resumeInfo?.education]);
 
+  useEffect(() => {
     setResumeInfo((prev) => ({
-      ...(prev ?? {}),
-      education: newEntries,
+      ...prev,
+      education: educationList,
     }));
-  };
+  }, [educationList, setResumeInfo]);
 
-  const AddNewEducation = () => {
-    setResumeInfo((prev) => ({
-      ...(prev ?? {}),
-      education: [...educationalList, createEducationEntry()],
-    }));
-  };
 
-  const RemoveEducation = () => {
-    if (educationalList.length <= 1) return;
+  const handleChange = (index, name, value) => {
+    setEducationList((prev) => {
+      const nextEducation = [...prev];
 
-    setResumeInfo((prev) => ({
-      ...(prev ?? {}),
-      education: educationalList.slice(0, -1),
-    }));
-  };
+      nextEducation[index] = {
+        ...nextEducation[index],
+        [name]: value,
+      };
 
-  const onSave = () => {
-    setLoading(true);
-    const data = {
-      data: {
-        education: educationalList.map((item) => {
-          const rest = { ...item };
-          delete rest.id;
-          return rest;
-        }),
-      },
-    };
-
-    GlobalApi.UpdateResumeDetail(params.resumeId, data).then(() => {
-      setLoading(false);
-      toast('Details updated !');
-    }, () => {
-      setLoading(false);
-      toast('Server Error, Please try again!');
+      return nextEducation;
     });
   };
 
+  const addNewEducation = () => {
+    setEducationList((prev) => [
+      ...prev,
+      {
+        universityName: "",
+        degree: "",
+        major: "",
+        startDate: "",
+        endDate: "",
+        description: "",
+      },
+    ]);
+  };
+
+  const removeEducation = () => {
+    setEducationList((prev) => {
+      if (prev.length === 1) {
+        return prev;
+      }
+
+      return prev.slice(0, -1);
+    });
+  };
+
+  const onSave = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const education = educationList.map(
+        ({ id, resumeId, ...item }) => item
+      );
+
+      await GlobalApi.updateEducation(
+        resumeId,
+        education
+      );
+
+      enabledNext(true);
+
+      toast.success("Education updated");
+    } catch (error) {
+      console.error(
+        "UPDATE_EDUCATION_ERROR:",
+        error
+      );
+
+      toast.error("Failed to update education");
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <div className='p-5 shadow-lg rounded-lg border-t-primary border-t-4 mt-10'>
     <h2 className='font-bold text-lg'>Education</h2>
     <p>Add Your Educational Qualifications</p>
 
     <div>
-      {educationalList.map((item,index)=>(
+      {educationList.map((item,index)=>(
         <div key={index}>
           <div className='grid grid-cols-2 gap-3 border p-3 my-5 rounded-lg'>
             <div className='col-span-2'>
@@ -132,8 +167,8 @@ function Education () {
     </div>
     <div className='flex justify-between'>
             <div className='flex gap-2'>
-            <Button variant="outline" onClick={AddNewEducation} className="text-primary"> + Add More Education</Button>
-            <Button variant="outline" onClick={RemoveEducation} className="text-primary"> - Remove</Button>
+            <Button variant="outline" onClick={addNewEducation} className="text-primary"> + Add More Education</Button>
+            <Button variant="outline" onClick={removeEducation} className="text-primary"> - Remove</Button>
 
             </div>
             <Button disabled={loading} onClick={()=>onSave()}>
