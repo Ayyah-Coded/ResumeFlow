@@ -7,7 +7,7 @@ const GlobalApi = (axiosClient) => ({
 
   getUserResumes: () =>
     axiosClient.get(
-      "/api/resumes/user"
+      "/api/resumes"
     ),
 
   getResumeById: (resumeId) =>

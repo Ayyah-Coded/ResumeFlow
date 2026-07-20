@@ -1,5 +1,42 @@
 import { prisma } from "../db/prisma.js";
 
+const getOwnedResumeOrThrow = async (resumeId, clerkUserId) => {
+  const resume = await prisma.resume.findFirst({
+    where: {
+      resumeId,
+      clerkUserId,
+    },
+  });
+
+  if (!resume) {
+    const error = new Error("Resume not found");
+    error.statusCode = 404;
+    throw error;
+  }
+
+  return resume;
+};
+
+const replaceChildRecords = async (
+  tx,
+  model,
+  resumeId,
+  items,
+  mapper
+) => {
+  await tx[model].deleteMany({
+    where: {
+      resumeId,
+    },
+  });
+
+  if (items.length > 0) {
+    await tx[model].createMany({
+      data: items.map((item) => mapper(item, resumeId)),
+    });
+  }
+};
+
 export const createResume = async (req, res) => {
   try {
     const { userId } = req;    
@@ -123,35 +160,18 @@ export const updateResume = async (req, res) => {
     const { resumeId } = req.params;
 
     const {
-      firstName, lastName, jobTitle,
-      address, phone, email, summary,
-      themeColor, experiences, education,
-      skills,
+      firstName, lastName, jobTitle, address,
+      phone, email, summary, themeColor,
+      experiences, education, skills,
     } = req.body;
 
-    if (!resumeId) {
-      return res.status(400).json({
-        success: false,
-        message: "Resume ID is required",
-      });
-    }
-
-    const existingResume = await prisma.resume.findFirst({
-      where: {
-        resumeId,
-        clerkUserId: req.userId,
-      },
-    });
-
-    if (!existingResume) {
-      return res.status(404).json({
-        success: false,
-        message: "Resume not found",
-      });
-    }
+    const existingResume = await getOwnedResumeOrThrow(
+      resumeId,
+      req.userId
+    );
 
     const resume = await prisma.$transaction(async (tx) => {
-      const updatedResume = await tx.resume.update({
+      await tx.resume.update({
         where: {
           id: existingResume.id,
         },
@@ -168,69 +188,66 @@ export const updateResume = async (req, res) => {
       });
 
       if (experiences !== undefined) {
-        await tx.experience.deleteMany({
-          where: {
-            resumeId: existingResume.id,
-          },
-        });
-
-        if (experiences.length > 0) {
-          await tx.experience.createMany({
-            data: experiences.map((experience) => ({
-              title: experience.title,
-              companyName: experience.companyName,
-              city: experience.city,
-              state: experience.state,
-              startDate: experience.startDate,
-              endDate: experience.endDate,
-              workSummary: experience.workSummary,
-              resumeId: existingResume.id,
-            })),
-          });
-        }
+        await replaceChildRecords(
+          tx,
+          "experience",
+          existingResume.id,
+          experiences,
+          (experience, resumeId) => ({
+            title: experience.title,
+            companyName: experience.companyName,
+            city: experience.city,
+            state: experience.state,
+            startDate: experience.startDate,
+            endDate: experience.endDate,
+            workSummary: experience.workSummary,
+            resumeId,
+          })
+        );
       }
 
       if (education !== undefined) {
-        await tx.education.deleteMany({
-          where: {
-            resumeId: existingResume.id,
-          },
-        });
-
-        if (education.length > 0) {
-          await tx.education.createMany({
-            data: education.map((educationItem) => ({
-              universityName: educationItem.universityName,
-              degree: educationItem.degree,
-              major: educationItem.major,
-              startDate: educationItem.startDate,
-              endDate: educationItem.endDate,
-              description: educationItem.description,
-              resumeId: existingResume.id,
-            })),
-          });
-        }
+        await replaceChildRecords(
+          tx,
+          "education",
+          existingResume.id,
+          education,
+          (educationItem, resumeId) => ({
+            universityName: educationItem.universityName,
+            degree: educationItem.degree,
+            major: educationItem.major,
+            startDate: educationItem.startDate,
+            endDate: educationItem.endDate,
+            description: educationItem.description,
+            resumeId,
+          })
+        );
       }
 
       if (skills !== undefined) {
-        await tx.skill.deleteMany({
-          where: {
-            resumeId: existingResume.id,
-          },
-        });
-
-        if (skills.length > 0) {
-          await tx.skill.createMany({
-            data: skills.map((skill) => ({
-              name: skill.name,
-              rating: skill.rating,
-              resumeId: existingResume.id,
-            })),
-          });
-        }
+        await replaceChildRecords(
+          tx,
+          "skill",
+          existingResume.id,
+          skills,
+          (skill, resumeId) => ({
+            name: skill.name,
+            rating: skill.rating,
+            resumeId,
+          })
+        );
       }
 
-      return updatedResume;
+      return tx.resume.findUnique({
+        where: {
+          id: existingResume.id,
+        },
+        include: {
+          experiences: true,
+          education: true,
+          skills: true,
+        },
+      });
     });
 
     return res.status(200).json({
@@ -241,9 +258,12 @@ export const updateResume = async (req, res) => {
   } catch (error) {
     console.error("UPDATE_RESUME_ERROR:", error);
 
-    return res.status(500).json({
+    return res.status(error.statusCode || 500).json({
       success: false,
-      message: "Failed to update resume",
+      message:
+        error.statusCode === 404
+          ? error.message
+          : "Failed to update resume",
     });
   }
 };
@@ -260,63 +280,49 @@ export const updateSkills = async (req, res) => {
   }
 
   try {
-    const resume = await prisma.resume.findFirst({
-      where: {
-         resumeId,
-        clerkUserId: req.userId,
-      },
+    const resume = await getOwnedResumeOrThrow(
+      resumeId,
+      req.userId
+    );
+
+    const updatedResume = await prisma.$transaction(async (tx) => {
+      await replaceChildRecords(
+        tx,
+        "skill",
+        resume.id,
+        skills,
+        (skill, resumeId) => ({
+          name: skill.name,
+          rating: skill.rating,
+          resumeId,
+        })
+      );
+
+      return tx.resume.findUnique({
+        where: {
+          id: resume.id,
+        },
+        include: {
+          experiences: true,
+          education: true,
+          skills: true,
+        },
+      });
     });
-
-    if (!resume) {
-      return res.status(404).json({
-        success: false,
-        message: "Resume not found",
-      });
-    }
-
-    const updatedResume =
-      await prisma.$transaction(async (tx) => {
-        await tx.skill.deleteMany({
-          where: {
-            resumeId: resume.id,
-          },
-        });
-
-        if (skills.length > 0) {
-          await tx.skill.createMany({
-            data: skills.map((skill) => ({
-              name: skill.name,
-              rating: skill.rating,
-              resumeId: resume.id,
-            })),
-          });
-        }
-
-        return tx.resume.findUnique({
-          where: {
-            id: resume.id,
-          },
-          include: {
-            experiences: true,
-            education: true,
-            skills: true,
-          },
-        });
-      });
 
     return res.status(200).json({
       success: true,
       data: updatedResume,
     });
   } catch (error) {
-    console.error(
-      "UPDATE_SKILLS_ERROR:",
-      error
-    );
+    console.error("UPDATE_SKILLS_ERROR:", error);
 
-    return res.status(500).json({
+    return res.status(error.statusCode || 500).json({
       success: false,
-      message: "Failed to update skills",
+      message:
+        error.statusCode === 404
+          ? error.message
+          : "Failed to update skills",
     });
   }
 };
@@ -333,40 +339,27 @@ export const updateEducation = async (req, res) => {
   }
 
   try {
-    const resume = await prisma.resume.findFirst({
-      where: {
-        resumeId,
-        clerkUserId: req.userId,
-      },
-    });
-
-    if (!resume) {
-      return res.status(404).json({
-        success: false,
-        message: "Resume not found",
-      });
-    }
+    const resume = await getOwnedResumeOrThrow(
+      resumeId,
+      req.userId
+    );
 
     const updatedResume = await prisma.$transaction(async (tx) => {
-      await tx.education.deleteMany({
-        where: {
-          resumeId: resume.id,
-        },
-      });
-
-      if (education.length > 0) {
-        await tx.education.createMany({
-          data: education.map((educationItem) => ({
-            universityName: educationItem.universityName,
-            degree: educationItem.degree,
-            major: educationItem.major,
-            startDate: educationItem.startDate,
-            endDate: educationItem.endDate,
-            description: educationItem.description,
-            resumeId: resume.id,
-          })),
-        });
-      }
+      await replaceChildRecords(
+        tx,
+        "education",
+        resume.id,
+        education,
+        (educationItem, resumeId) => ({
+          universityName: educationItem.universityName,
+          degree: educationItem.degree,
+          major: educationItem.major,
+          startDate: educationItem.startDate,
+          endDate: educationItem.endDate,
+          description: educationItem.description,
+          resumeId,
+        })
+      );
 
       return tx.resume.findUnique({
         where: {
@@ -382,15 +375,20 @@ export const updateEducation = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: "Education updated successfully",
       data: updatedResume,
     });
   } catch (error) {
-    console.error("UPDATE_EDUCATION_ERROR:", error);
+    console.error(
+      "UPDATE_EDUCATION_ERROR:",
+      error
+    );
 
-    return res.status(500).json({
+    return res.status(error.statusCode || 500).json({
       success: false,
-      message: "Failed to update education",
+      message:
+        error.statusCode === 404
+          ? error.message
+          : "Failed to update education",
     });
   }
 };
@@ -407,41 +405,28 @@ export const updateExperiences = async (req, res) => {
   }
 
   try {
-    const resume = await prisma.resume.findFirst({
-      where: {
-        resumeId,
-        clerkUserId: req.userId,
-      },
-    });
-
-    if (!resume) {
-      return res.status(404).json({
-        success: false,
-        message: "Resume not found",
-      });
-    }
+    const resume = await getOwnedResumeOrThrow(
+      resumeId,
+      req.userId
+    );
 
     const updatedResume = await prisma.$transaction(async (tx) => {
-      await tx.experience.deleteMany({
-        where: {
-          resumeId: resume.id,
-        },
-      });
-
-      if (experiences.length > 0) {
-        await tx.experience.createMany({
-          data: experiences.map((experience) => ({
-            title: experience.title,
-            companyName: experience.companyName,
-            city: experience.city,
-            state: experience.state,
-            startDate: experience.startDate,
-            endDate: experience.endDate,
-            workSummary: experience.workSummary,
-            resumeId: resume.id,
-          })),
-        });
-      }
+      await replaceChildRecords(
+        tx,
+        "experience",
+        resume.id,
+        experiences,
+        (experience, resumeId) => ({
+          title: experience.title,
+          companyName: experience.companyName,
+          city: experience.city,
+          state: experience.state,
+          startDate: experience.startDate,
+          endDate: experience.endDate,
+          workSummary: experience.workSummary,
+          resumeId,
+        })
+      );
 
       return tx.resume.findUnique({
         where: {
@@ -457,15 +442,20 @@ export const updateExperiences = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: "Experiences updated successfully",
       data: updatedResume,
     });
   } catch (error) {
-    console.error("UPDATE_EXPERIENCES_ERROR:", error);
+    console.error(
+      "UPDATE_EXPERIENCES_ERROR:",
+      error
+    );
 
-    return res.status(500).json({
+    return res.status(error.statusCode || 500).json({
       success: false,
-      message: "Failed to update experiences",
+      message:
+        error.statusCode === 404
+          ? error.message
+          : "Failed to update experiences",
     });
   }
 };
