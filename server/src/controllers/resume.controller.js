@@ -1,7 +1,7 @@
 import { prisma } from "../db/prisma.js";
 
-const getOwnedResumeOrThrow = async (resumeId, clerkUserId) => {
-  const resume = await prisma.resume.findFirst({
+const getOwnedResumeOrThrow = async (client, resumeId, clerkUserId) => {
+  const resume = await client.resume.findFirst({
     where: {
       resumeId,
       clerkUserId,
@@ -17,13 +17,42 @@ const getOwnedResumeOrThrow = async (resumeId, clerkUserId) => {
   return resume;
 };
 
-const replaceChildRecords = async (
-  tx,
-  model,
+const mapExperience = (experience, resumeId) => ({
+  title: experience.title,
+  companyName: experience.companyName,
+  city: experience.city,
+  state: experience.state,
+  startDate: experience.startDate,
+  endDate: experience.endDate,
+  workSummary: experience.workSummary,
   resumeId,
-  items,
-  mapper
+});
+
+const mapEducation = (educationItem, resumeId) => ({
+  universityName: educationItem.universityName,
+  degree: educationItem.degree,
+  major: educationItem.major,
+  startDate: educationItem.startDate,
+  endDate: educationItem.endDate,
+  description: educationItem.description,
+  resumeId,
+});
+
+const mapSkill = (skill, resumeId) => ({
+  name: skill.name,
+  rating: skill.rating,
+  resumeId,
+});
+
+const replaceChildRecords = async (
+  tx, model, resumeId, items, mapper
 ) => {
+  if (!Array.isArray(items)) {
+    const error = new Error(`${model} data must be an array`);
+    error.statusCode = 400;
+    throw error;
+  }
+
   await tx[model].deleteMany({
     where: {
       resumeId,
@@ -165,6 +194,36 @@ export const updateResume = async (req, res) => {
       experiences, education, skills,
     } = req.body;
 
+    if (
+      experiences !== undefined &&
+      !Array.isArray(experiences)
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Experiences must be an array",
+      });
+    }
+
+    if (
+      education !== undefined &&
+      !Array.isArray(education)
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Education must be an array",
+      });
+    }
+
+    if (
+      skills !== undefined &&
+      !Array.isArray(skills)
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Skills must be an array",
+      });
+    }
+
     const existingResume = await getOwnedResumeOrThrow(
       resumeId,
       req.userId
@@ -193,16 +252,7 @@ export const updateResume = async (req, res) => {
           "experience",
           existingResume.id,
           experiences,
-          (experience, resumeId) => ({
-            title: experience.title,
-            companyName: experience.companyName,
-            city: experience.city,
-            state: experience.state,
-            startDate: experience.startDate,
-            endDate: experience.endDate,
-            workSummary: experience.workSummary,
-            resumeId,
-          })
+          mapExperience
         );
       }
 
@@ -212,15 +262,7 @@ export const updateResume = async (req, res) => {
           "education",
           existingResume.id,
           education,
-          (educationItem, resumeId) => ({
-            universityName: educationItem.universityName,
-            degree: educationItem.degree,
-            major: educationItem.major,
-            startDate: educationItem.startDate,
-            endDate: educationItem.endDate,
-            description: educationItem.description,
-            resumeId,
-          })
+          mapEducation
         );
       }
 
@@ -230,11 +272,7 @@ export const updateResume = async (req, res) => {
           "skill",
           existingResume.id,
           skills,
-          (skill, resumeId) => ({
-            name: skill.name,
-            rating: skill.rating,
-            resumeId,
-          })
+          mapSkill
         );
       }
 
@@ -291,13 +329,8 @@ export const updateSkills = async (req, res) => {
         "skill",
         resume.id,
         skills,
-        (skill, resumeId) => ({
-          name: skill.name,
-          rating: skill.rating,
-          resumeId,
-        })
+        mapSkill
       );
-
       return tx.resume.findUnique({
         where: {
           id: resume.id,
@@ -350,17 +383,8 @@ export const updateEducation = async (req, res) => {
         "education",
         resume.id,
         education,
-        (educationItem, resumeId) => ({
-          universityName: educationItem.universityName,
-          degree: educationItem.degree,
-          major: educationItem.major,
-          startDate: educationItem.startDate,
-          endDate: educationItem.endDate,
-          description: educationItem.description,
-          resumeId,
-        })
+        mapEducation
       );
-
       return tx.resume.findUnique({
         where: {
           id: resume.id,
@@ -416,16 +440,7 @@ export const updateExperiences = async (req, res) => {
         "experience",
         resume.id,
         experiences,
-        (experience, resumeId) => ({
-          title: experience.title,
-          companyName: experience.companyName,
-          city: experience.city,
-          state: experience.state,
-          startDate: experience.startDate,
-          endDate: experience.endDate,
-          workSummary: experience.workSummary,
-          resumeId,
-        })
+        mapExperience
       );
 
       return tx.resume.findUnique({

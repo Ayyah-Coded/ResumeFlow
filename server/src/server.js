@@ -11,7 +11,7 @@ app.use(express.json());
 app.use(clerkMiddleware());
 
 app.use(cors({
-  origin: "http://localhost:5173",
+  origin: process.env.CLIENT_URL,
   credentials: true
 }));
 
@@ -24,6 +24,10 @@ app.get("/health", (req, res) => {
 
 
 app.use("/api/resumes", resumeRoutes);
+
+ app.use((_req, res) => {
+    res.status(404).json({ message: "Not Found" });
+  })
 
 const PORT = process.env.PORT || 5000;
 

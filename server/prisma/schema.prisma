@@ -27,6 +27,8 @@ model Resume {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@index([clerkUserId])
+
   experiences Experience[]
   education   Education[]
   skills      Skill[]
@@ -48,6 +50,8 @@ model Experience {
 
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+
+  @@index([resumeId])
 }
 
 model Education {
@@ -65,6 +69,8 @@ model Education {
 
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
+
+  @@index([resumeId])
 }
 
 model Skill {
@@ -78,4 +84,6 @@ model Skill {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([resumeId])
 }
