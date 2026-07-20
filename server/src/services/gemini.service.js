@@ -24,6 +24,46 @@ const SUMMARY_RESPONSE_SCHEMA = {
   },
 };
 
+
+export const generateExperience = async (
+  positionTitle
+) => {
+  const prompt = `
+Generate professional resume experience content for the position title: "${positionTitle}".
+
+Requirements:
+- ATS-friendly
+- Professional
+- Concise
+- Strong action-oriented language
+- Suitable for a modern professional resume
+- Do not mention a specific company
+- Do not invent a company name
+- Do not include the job title
+- Do not mention experience level
+- Generate exactly 5 to 7 bullet points
+- Each bullet point must be concise and impactful
+- Return only HTML
+- Wrap all bullet points inside <ul>
+- Wrap each bullet point inside <li>
+`;
+
+  const response = await ai.models.generateContent({
+    model: "gemini-3.5-flash",
+    contents: prompt,
+
+    config: {
+      temperature: 0.6,
+      topP: 0.75,
+      topK: 50,
+      maxOutputTokens: 2500,
+    },
+  });
+
+  return response.text;
+};
+
+
 export const generateResumeSummaries = async (jobTitle) => {
   const prompt = `
 Generate three professional resume summaries for the job title: "${jobTitle}".

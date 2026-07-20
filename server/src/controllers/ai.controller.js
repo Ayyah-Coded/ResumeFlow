@@ -1,7 +1,8 @@
-import { generateResumeSummaries } from "../services/gemini.service.js";
+import { generateResumeSummaries, generateExperience } from "../services/gemini.service.js";
 import { reserveAiUsage, refundAiUsage, getAiUsage } from "../services/ai-usage.service.js";
 
-export const generateSummary = async ( req, res ) => {
+
+export const generateSummary = async (req, res) => {
   const userId = req.userId;
 
   let usageReservation = null;
@@ -16,14 +17,11 @@ export const generateSummary = async ( req, res ) => {
       });
     }
 
-    usageReservation = await reserveAiUsage(
-      userId
-    );
+    usageReservation = await reserveAiUsage(userId);
 
-    const summaries =
-      await generateResumeSummaries(
-        jobTitle.trim()
-      );
+    const summaries = await generateResumeSummaries(
+      jobTitle.trim()
+    );
 
     const usage = await getAiUsage(userId);
 
@@ -38,8 +36,6 @@ export const generateSummary = async ( req, res ) => {
       error
     );
 
-    error.statusCode = 429;
-    error.code = "DAILY_LIMIT_REACHED";
     if (
       usageReservation &&
       error.code !== "DAILY_LIMIT_REACHED"
@@ -63,14 +59,77 @@ export const generateSummary = async ( req, res ) => {
       message:
         "Failed to generate resume summaries",
     });
-  };
+  }
 };
 
-export const getAiUsageStatus = async ( req, res ) => {
+
+export const generateExperienceContent = async (
+  req,
+  res
+) => {
+  const userId = req.userId;
+
+  let usageReservation = null;
+
   try {
-    const usage = await getAiUsage(
-      req.userId
+    const { positionTitle } = req.body;
+
+    if (!positionTitle?.trim()) {
+      return res.status(400).json({
+        success: false,
+        message: "Position title is required",
+      });
+    }
+
+    usageReservation = await reserveAiUsage(userId);
+
+    const experience = await generateExperience(
+      positionTitle.trim()
     );
+
+    const usage = await getAiUsage(userId);
+
+    return res.status(200).json({
+      success: true,
+      data: experience,
+      usage,
+    });
+  } catch (error) {
+    console.error(
+      "GENERATE_EXPERIENCE_ERROR:",
+      error
+    );
+
+    if (
+      usageReservation &&
+      error.code !== "DAILY_LIMIT_REACHED"
+    ) {
+      await refundAiUsage(
+        userId,
+        usageReservation.usageDate
+      );
+    }
+
+    if (error.code === "DAILY_LIMIT_REACHED") {
+      return res.status(429).json({
+        success: false,
+        message:
+          "Daily AI generation limit reached. Please try again tomorrow.",
+      });
+    }
+
+    return res.status(500).json({
+      success: false,
+      message:
+        "Failed to generate experience content",
+    });
+  }
+};
+
+
+export const getAiUsageStatus = async (req, res) => {
+  try {
+    const usage = await getAiUsage(req.userId);
 
     return res.status(200).json({
       success: true,
@@ -86,5 +145,5 @@ export const getAiUsageStatus = async ( req, res ) => {
       success: false,
       message: "Failed to get AI usage",
     });
-  };
+  }
 };

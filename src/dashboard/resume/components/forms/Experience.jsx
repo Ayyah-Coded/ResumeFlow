@@ -1,18 +1,22 @@
-import { useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-
-import RichTextEditor from '../RichTextEditor';
-import { ResumeInfoContext } from '@/context/ResumeInfoContext';
+import { useContext, useEffect, useState } from 'react';
 
 import GlobalApi from '@/services/GlobalApi';
+import RichTextEditor from '../RichTextEditor';
+import { useAxiosClient } from '@/hooks/useAxiosClient';
+import { ResumeInfoContext } from '@/context/ResumeInfoContext';
 
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+
 import { toast } from 'sonner';
 import { LoaderCircle } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 
 
 function Experience ({ enabledNext }) {
+  const axiosClient = useAxiosClient();
+  const api = GlobalApi(axiosClient);
+
   const {resumeId} = useParams();
   const [ loading, setLoading ] = useState(false);
   const { resumeInfo, setResumeInfo } = useContext(ResumeInfoContext);
@@ -98,7 +102,7 @@ function Experience ({ enabledNext }) {
         ({ id, resumeId, ...experience }) => experience
       );
 
-      await GlobalApi.updateExperiences(
+      await api.updateExperiences(
         resumeId,
         experiences
       );
@@ -129,27 +133,45 @@ function Experience ({ enabledNext }) {
           <div className='grid grid-cols-2 gap-3 border p-3 my-5 rounded-lg'>
             <div>
               <label className='text-xs'>Position Title</label>
-              <Input name ="title" onChange = {(e) => handleChange(index, e.target.name, e.target.value)} defaultValue={item?.title} />
+              <Input 
+                name ="title" value={item?.title ?? ""} 
+                onChange = {(e) => handleChange(index, e.target.name, e.target.value)} 
+              />
             </div>
             <div>
                 <label className='text-xs'>Company Name</label>
-                <Input name="companyName" onChange={(e) => handleChange(index, e.target.name, e.target.value)} defaultValue={item?.companyName} />
+                <Input 
+                  name="companyName" value={item?.companyName ?? ""}
+                  onChange={(e) => handleChange(index, e.target.name, e.target.value)} 
+                />
             </div>
             <div>
                 <label className='text-xs'>City</label>
-                <Input name ="city" onChange = {(e) => handleChange(index, e.target.name, e.target.value)} defaultValue={item?.city} />
+                <Input 
+                  name ="city" value={item?.city ?? ""}
+                  onChange = {(e) => handleChange(index, e.target.name, e.target.value)} 
+                />
             </div>
             <div>
                 <label className='text-xs'>State</label>
-                <Input name="state" onChange={(e)=>handleChange(index, e.target.name, e.target.value)} defaultValue={item?.state} />
+                <Input 
+                  name="state" value={item?.state ?? ""}
+                  onChange={(e)=>handleChange(index, e.target.name, e.target.value)} 
+                />
             </div>
             <div>
                 <label className='text-xs'>Start Date</label>
-                <Input type="date" name="startDate" onChange={(e)=>handleChange(index, e.target.name, e.target.value)} defaultValue={item?.startDate} />
+                <Input 
+                  type="date" name="startDate" value={item?.startDate ?? ""}
+                  onChange={(e)=>handleChange(index, e.target.name, e.target.value)} 
+                />
             </div>
             <div>
                 <label className='text-xs'>End Date</label>
-                <Input type="date" name="endDate" onChange={(e)=>handleChange(index, e.target.name, e.target.value)} defaultValue={item?.endDate} />
+                <Input 
+                  type="date" name="endDate" value={item?.endDate ?? ""}
+                  onChange={(e)=>handleChange(index, e.target.name, e.target.value)} 
+                />
             </div>
 
             <div className='col-span-2'>

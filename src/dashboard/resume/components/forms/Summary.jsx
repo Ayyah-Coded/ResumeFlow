@@ -1,5 +1,5 @@
 import { useParams } from 'react-router-dom';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 
 import GlobalApi from '@/services/GlobalApi';
 import { useAxiosClient } from '@/hooks/useAxiosClient';
@@ -14,16 +14,14 @@ import { Textarea } from '@/components/ui/textarea';
 function Summary({ enabledNext }) {
   const { resumeId } = useParams();
 
-  const { resumeInfo, setResumeInfo } =
-    useContext(ResumeInfoContext);
+  const { resumeInfo, setResumeInfo, aiUsage, setAiUsage, } = useContext(ResumeInfoContext);
 
   const axiosClient = useAxiosClient();
-  const api = GlobalApi(axiosClient);
+  const api = useMemo( () => GlobalApi(axiosClient), [axiosClient] );
 
   const [summary, setSummary] = useState('');
   const [loading, setLoading] = useState(false);
-  const [aiGeneratedSummaryList, setAiGeneratedSummaryList] =
-    useState([]);
+  const [aiGeneratedSummaryList, setAiGeneratedSummaryList] = useState([]);
 
   useEffect(() => {
     setSummary(resumeInfo?.summary ?? '');
@@ -45,12 +43,9 @@ function Summary({ enabledNext }) {
       toast.error(
         'Please enter a job title first.'
       );
-
       return;
     }
-
     setLoading(true);
-
     try {
       const response = await api.generateSummary(
         resumeInfo.jobTitle
@@ -59,6 +54,8 @@ function Summary({ enabledNext }) {
       setAiGeneratedSummaryList(
         response.data.data
       );
+
+      setAiUsage(response.data.usage);
     } catch (error) {
       console.error(
         'GENERATE_SUMMARY_ERROR:',
@@ -72,7 +69,7 @@ function Summary({ enabledNext }) {
     } finally {
       setLoading(false);
     }
-  };
+};
 
   const handleSuggestionSelect = (selectedSummary) => {
     setSummary(selectedSummary);
@@ -121,6 +118,15 @@ function Summary({ enabledNext }) {
         <p>
           Add Summary for your job title
         </p>
+
+        {aiUsage && (
+          <p className="text-xs text-muted-foreground mt-1">
+            AI generations remaining today:{' '}
+            <span className="font-medium text-primary">
+              {aiUsage.remaining}
+            </span>
+          </p>
+        )};
 
         <form
           className="mt-7"

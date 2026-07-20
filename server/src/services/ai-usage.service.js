@@ -1,4 +1,4 @@
-import { prisma } from "../config/prisma.js";
+import { prisma } from "../db/prisma.js";
 
 export const DAILY_AI_LIMIT = 5;
 
