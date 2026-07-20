@@ -1,10 +1,20 @@
 import { prisma } from "../db/prisma.js";
+import { getAuth } from "@clerk/express";
 
 export const createResume = async (req, res) => {
   try {
-    const { title, resumeId, userEmail, userName } = req.body;
+    const { isAuthenticated, userId } = getAuth(req);
 
-    if (!title || !resumeId || !userEmail) {
+    if (!isAuthenticated || !userId) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized",
+      });
+    };
+    
+    const { title, resumeId } = req.body;
+
+    if (!title || !resumeId ) {
       return res.status(400).json({
         success: false,
         message: "title, resumeId and userEmail are required",
@@ -25,7 +35,7 @@ export const createResume = async (req, res) => {
     }
 
     const resume = await prisma.resume.create({
-      data: { title, resumeId, userEmail, userName },
+      data: { title, resumeId, clerkUserId: userId, },
     });
 
     return res.status(201).json({
@@ -358,12 +368,14 @@ export const updateExperiences = async (req, res) => {
           },
         });
 
-        await tx.experience.createMany({
-          data: experiences.map((experience) => ({
-            ...experience,
-            resumeId: resume.id,
-          })),
-        });
+        if (experiences.length > 0) {
+          await tx.experience.createMany({
+            data: experiences.map((experience) => ({
+              ...experience,
+              resumeId: resume.id,
+            })),
+          });
+        };
 
         return tx.resume.findUnique({
           where: {
@@ -454,15 +466,13 @@ export const updateEducation = async (req, res) => {
     });
   } catch (error) {
     console.error(
-      "UPDATE_EDUCATION_ERROR:",
-      error
-    );
-
+      "UPDATE_EDUCATION_ERROR:", error    
+    )};
+  
     return res.status(500).json({
       success: false,
-      message: "Failed to update education",
+      message: "Failed to delete resume",
     });
-  }
 };
 
 export const deleteResume = async (req, res) => {
@@ -476,27 +486,27 @@ export const deleteResume = async (req, res) => {
       });
     };
 
-    const resume = await prisma.resume.delete({
-      where: { resumeId },
-    });
-
-    if (!resume) {
+    const existingResume = await prisma.resume.findUnique({ where: { resumeId } });
+    
+    if (!existingResume) {
       return res.status(404).json({
         success: false,
         message: "Resume not found",
       });
-    };
+    }
+
+    const resume = await prisma.resume.delete({ where: { resumeId } });
 
     return res.status(200).json({
       success: true,
       data: resume,
     });
   } catch (error) {
-    console.error("GET_RESUME_BY_ID_ERROR:", error);
+    console.error("DELETE_RESUME_ERROR:", error);
 
     return res.status(500).json({
       success: false,
       message: "Failed to delete resume",
     });
   }
-}
+};

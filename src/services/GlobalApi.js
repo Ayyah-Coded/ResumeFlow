@@ -1,74 +1,39 @@
-import axios from "axios";
+import { useAxiosClient } from "@/hooks/useAxiosClient";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const GlobalApi = (axiosClient) => ({
+  createResume: (data) =>
+    axiosClient.post(
+      "/api/resumes", data
+    ),
+  
+  getUserResumes: () =>
+    axiosClient.get("/api/resumes"),
 
-const axiosClient = axios.create({
-  baseURL: API_BASE_URL,
-  headers: {
-    "Content-Type": "application/json",
-  },
+  getResumeById: (resumeId) =>
+    axiosClient.get(`/api/resumes/${resumeId}`),
+
+  updateResume: (resumeId, data) =>
+    axiosClient.put(
+      `/api/resumes/${resumeId}`, data
+    ),
+
+  updateExperiences: (resumeId, experiences) =>
+    axiosClient.put(
+      `/api/resumes/${resumeId}/experiences`, { experiences }
+    ),
+
+  updateEducation: (resumeId, education) =>
+    axiosClient.put(
+      `/api/resumes/${resumeId}/education`, { education }
+    ),
+
+  updateSkills: (resumeId, skills) =>
+    axiosClient.put(
+      `/api/resumes/${resumeId}/skills`, { skills }
+    ),
+
+  deleteResume: (resumeId) =>
+    axiosClient.delete(`/api/resumes/${resumeId}`),
 });
 
-const createResume  = async (data) => {
-  const response = await axiosClient.post("/api/resumes", data);
-
-  return response.data;
-};
-
-const getUserResumes  = async (email) => {
-  const response = await axiosClient.get(`/api/resumes/user/${email}`);
-
-  return response.data;
-};
-
-const getResumeById  = async (resumeId) => {
-  const response = await axiosClient.get(`/api/resumes/${resumeId}`);
-
-  return response.data;
-};
-
-const updateExperiences = (resumeId, experiences) => {
-  return axiosClient.put(
-    `/api/resumes/${resumeId}/experiences`,
-    { experiences }
-  );
-};
-
-const updateEducation = (resumeId, education) => {
-  return axiosClient.put(
-    `/api/resumes/${resumeId}/education`,
-    { education }
-  );
-};
-
-const updateSkills = (resumeId, skills) => {
-  return axiosClient.put(
-    `/api/resumes/${resumeId}/skills`,
-    { skills }
-  );
-};
-
-const updateResume = async (resumeId, data) => {
-  const response = await axiosClient.put(
-    `/api/resumes/${resumeId}`,
-    data
-  );
-
-  return response.data;
-};
-
-const deleteResume = async (resumeId) => {
-  const response = await axiosClient.delete(`/api/resumes/${resumeId}`);
-  return response.data;
-}
-
-export default {
-  createResume,
-  getUserResumes,
-  getResumeById,
-  updateSkills,
-  updateResume,
-  updateExperiences,
-  updateEducation,
-  deleteResume
-};
+export default GlobalApi;

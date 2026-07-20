@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 import { ResumeInfoContext } from '@/context/ResumeInfoContext';
@@ -13,7 +13,7 @@ import { toast } from 'sonner';
 
 
 
-function Education() {
+function Education({ enabledNext }) {
   const {resumeId} = useParams();
   const { resumeInfo, setResumeInfo } = useContext(ResumeInfoContext);
 

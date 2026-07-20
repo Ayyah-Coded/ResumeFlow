@@ -1,5 +1,5 @@
 import { useParams } from 'react-router-dom';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useState } from 'react';
 
 import GlobalApi from '@/services/GlobalApi';
 import { AIChatSession } from '@/services/AIModel';
@@ -46,7 +46,7 @@ function Summary ({ enabledNext }) {
       const generatedSummaries = JSON.parse( result.response.text() );
 
       setAiGeneratedSummaryList( generatedSummaries );
-    } catch (e) {
+    } catch (error) {
         console.error("GENERATE_SUMMARY_ERROR:",  error);
 
         toast.error("Failed to generate summary, please try again");
@@ -54,7 +54,6 @@ function Summary ({ enabledNext }) {
       setLoading(false);
     }
   };
-
   const onSave = async (e) => {
     e.preventDefault();
 

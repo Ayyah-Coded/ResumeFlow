@@ -8,22 +8,21 @@ datasource db {
 }
 
 model Resume {
-  id        String   @id @default(uuid())
-  resumeId  String   @unique
+  id          String   @id @default(uuid())
+  resumeId    String   @unique
 
-  title     String
-  userEmail String
-  userName  String?
+  title       String
+  clerkUserId String
 
-  firstName String?
-  lastName  String?
-  jobTitle  String?
-  address   String?
-  phone     String?
-  email     String?
+  firstName   String?
+  lastName    String?
+  jobTitle    String?
+  address     String?
+  phone       String?
+  email       String?
 
-  summary   String?
-  themeColor String?
+  summary     String?
+  themeColor  String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

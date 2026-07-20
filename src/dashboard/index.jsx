@@ -1,42 +1,61 @@
-import { useEffect, useState } from 'react'
-import { useUser } from '@clerk/react'
+import { useCallback, useEffect, useState } from "react";
 
-import AddResume from './components/AddResume'
-import ResumeCardItem from './components/ResumeCardItem';
+import AddResume from "./components/AddResume";
+import ResumeCardItem from "./components/ResumeCardItem";
 
-import GlobalApi from '@/services/GlobalApi';
+import GlobalApi from "@/services/GlobalApi";
 
 function Dashboard() {
+  const [resumeList, setResumeList] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const { user } = useUser();
+  const getResumesList = useCallback(async () => {
+    try {
+      const response = await GlobalApi.getUserResumes();
 
-  const [ resumeList, setResumeList ] = useState([]);
+      setResumeList(response.data.data);
+    } catch (error) {
+      console.error("GET_RESUMES_ERROR:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
-  useEffect(() => { user && GetResumesList()}, [user])
+  useEffect(() => {
+    getResumesList();
+  }, [getResumesList]);
 
-
-  function GetResumesList () {
-    GlobalApi.GetUserResumes(user?.primaryEmailAddress?.emailAddress)
-    .then( resp => {
-      setResumeList(resp.data.data);
-    })
-  }
   return (
-    <div className='p-10 md:px-20 lg:px-32'>
-      <h2 className='font-bold text-3xl'>My Resume</h2>
-      <p>Start creating professional and compelling Resume for your next dream role</p>
-      <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5 mt-10'>
-        <AddResume/>
-        {resumeList.length > 0 
-          ? resumeList.map((resume,index) => (
-            <ResumeCardItem resume = {resume} key = {index} refreshData = {GetResumesList} /> ))
-          : [1,2,3,4].map((item,index) => (
-            <div key={index} className='h-[280px] rounded-lg bg-slate-200 animate-pulse'></div>
-            ))
-        }
+    <div className="p-10 md:px-20 lg:px-32">
+      <h2 className="font-bold text-3xl">My Resume</h2>
+
+      <p>
+        Start creating professional and compelling resumes for your next dream
+        role.
+      </p>
+
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5 mt-10">
+        <AddResume />
+
+        {loading ? (
+          [1, 2, 3, 4].map((item) => (
+            <div
+              key={item}
+              className="h-[280px] rounded-lg bg-slate-200 animate-pulse"
+            />
+          ))
+        ) : resumeList.length > 0 ? (
+          resumeList.map((resume) => (
+            <ResumeCardItem
+              key={resume.resumeId}
+              resume={resume}
+              refreshData={getResumesList}
+            />
+          ))
+        ) : null}
       </div>
     </div>
-  )
+  );
 }
 
 export default Dashboard;

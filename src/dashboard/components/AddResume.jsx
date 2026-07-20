@@ -1,66 +1,63 @@
-import { Loader2, PlusSquare } from 'lucide-react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Loader2, PlusSquare } from 'lucide-react'
 
-import { useUser } from '@clerk/react'
+
+import { toast } from 'sonner';
 import { v4 as uuidv4 } from 'uuid';
-
+import { useAxiosClient } from "@/hooks/useAxiosClient";
 import GlobalApi from '@/services/GlobalApi'
 
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { toast } from 'sonner';
+import { Button } from '@/components/ui/button'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 
 
 
-async function AddResume() {
-  const { user } = useUser();
+function AddResume() {
+  const axiosClient = useAxiosClient();
+  const api = GlobalApi(axiosClient);
 
-  const [ openDialog, setOpenDialog ] = useState(false)
-  const [ resumeTitle, setResumeTitle ] = useState();
   const [ loading, setLoading ] = useState(false);
+  const [ resumeTitle, setResumeTitle ] = useState("");
+  const [ openDialog, setOpenDialog ] = useState(false)
   
   const navigation = useNavigate();
 
-  if (!resumeTitle.trim()) {
+  const onCreate = async () => {
+    if (!resumeTitle.trim()) {
       toast.error("Please enter a resume title");
       return;
     }
 
-  if (!user?.primaryEmailAddress?.emailAddress) {
-    toast.error("User email not found");
-    return;
-  }
+    setLoading(true);
+    const resumeId = uuidv4();
 
-  setLoading(true);
+    const data = {
+      title: resumeTitle.trim(),
+      resumeId,
+    }; 
 
-  const resumeId = uuidv4();
+    try {
+      await api.createResume(data);
 
-  const data = {
-    title: resumeTitle.trim(),
-    resumeId,
-    userEmail: user.primaryEmailAddress.emailAddress,
-    userName: user.fullName,
-  }; 
+      toast.success("Resume created successfully");
 
-  try {
-    const onCreate = await GlobalApi.CreateNewResume(data);
-
-    toast.success("Resume created successfully");
-
-    return onCreate;
-    setTitle("");
+      setResumeTitle("");
+      setOpenDialog(false);
+      
+      navigation(`/dashboard/resume/${resumeId}/edit`);
     } catch (error) {
-    console.error("CREATE_RESUME_ERROR:", error);
+      console.error("CREATE_RESUME_ERROR:", error);
 
-    toast.error(
-      error.response?.data?.message ||
-        "Failed to create resume"
-    );
+      toast.error(
+        error.response?.data?.message ||
+          "Failed to create resume"
+      );
     } finally {
       setLoading(false);
     }
+  };
   return (
     <div >
       <div 

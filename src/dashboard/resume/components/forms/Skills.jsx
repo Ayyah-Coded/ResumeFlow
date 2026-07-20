@@ -62,8 +62,6 @@ function Skills () {
   };
 
   const onSave = async () => {
-    e.preventDefault();
-
     setLoading(true);
 
     try {

@@ -28,8 +28,7 @@ export type ResumeMinAggregateOutputType = {
   id: string | null
   resumeId: string | null
   title: string | null
-  userEmail: string | null
-  userName: string | null
+  clerkUserId: string | null
   firstName: string | null
   lastName: string | null
   jobTitle: string | null
@@ -46,8 +45,7 @@ export type ResumeMaxAggregateOutputType = {
   id: string | null
   resumeId: string | null
   title: string | null
-  userEmail: string | null
-  userName: string | null
+  clerkUserId: string | null
   firstName: string | null
   lastName: string | null
   jobTitle: string | null
@@ -64,8 +62,7 @@ export type ResumeCountAggregateOutputType = {
   id: number
   resumeId: number
   title: number
-  userEmail: number
-  userName: number
+  clerkUserId: number
   firstName: number
   lastName: number
   jobTitle: number
@@ -84,8 +81,7 @@ export type ResumeMinAggregateInputType = {
   id?: true
   resumeId?: true
   title?: true
-  userEmail?: true
-  userName?: true
+  clerkUserId?: true
   firstName?: true
   lastName?: true
   jobTitle?: true
@@ -102,8 +98,7 @@ export type ResumeMaxAggregateInputType = {
   id?: true
   resumeId?: true
   title?: true
-  userEmail?: true
-  userName?: true
+  clerkUserId?: true
   firstName?: true
   lastName?: true
   jobTitle?: true
@@ -120,8 +115,7 @@ export type ResumeCountAggregateInputType = {
   id?: true
   resumeId?: true
   title?: true
-  userEmail?: true
-  userName?: true
+  clerkUserId?: true
   firstName?: true
   lastName?: true
   jobTitle?: true
@@ -211,8 +205,7 @@ export type ResumeGroupByOutputType = {
   id: string
   resumeId: string
   title: string
-  userEmail: string
-  userName: string | null
+  clerkUserId: string
   firstName: string | null
   lastName: string | null
   jobTitle: string | null
@@ -250,8 +243,7 @@ export type ResumeWhereInput = {
   id?: Prisma.StringFilter<"Resume"> | string
   resumeId?: Prisma.StringFilter<"Resume"> | string
   title?: Prisma.StringFilter<"Resume"> | string
-  userEmail?: Prisma.StringFilter<"Resume"> | string
-  userName?: Prisma.StringNullableFilter<"Resume"> | string | null
+  clerkUserId?: Prisma.StringFilter<"Resume"> | string
   firstName?: Prisma.StringNullableFilter<"Resume"> | string | null
   lastName?: Prisma.StringNullableFilter<"Resume"> | string | null
   jobTitle?: Prisma.StringNullableFilter<"Resume"> | string | null
@@ -271,8 +263,7 @@ export type ResumeOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   resumeId?: Prisma.SortOrder
   title?: Prisma.SortOrder
-  userEmail?: Prisma.SortOrder
-  userName?: Prisma.SortOrderInput | Prisma.SortOrder
+  clerkUserId?: Prisma.SortOrder
   firstName?: Prisma.SortOrderInput | Prisma.SortOrder
   lastName?: Prisma.SortOrderInput | Prisma.SortOrder
   jobTitle?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -295,8 +286,7 @@ export type ResumeWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.ResumeWhereInput[]
   NOT?: Prisma.ResumeWhereInput | Prisma.ResumeWhereInput[]
   title?: Prisma.StringFilter<"Resume"> | string
-  userEmail?: Prisma.StringFilter<"Resume"> | string
-  userName?: Prisma.StringNullableFilter<"Resume"> | string | null
+  clerkUserId?: Prisma.StringFilter<"Resume"> | string
   firstName?: Prisma.StringNullableFilter<"Resume"> | string | null
   lastName?: Prisma.StringNullableFilter<"Resume"> | string | null
   jobTitle?: Prisma.StringNullableFilter<"Resume"> | string | null
@@ -316,8 +306,7 @@ export type ResumeOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   resumeId?: Prisma.SortOrder
   title?: Prisma.SortOrder
-  userEmail?: Prisma.SortOrder
-  userName?: Prisma.SortOrderInput | Prisma.SortOrder
+  clerkUserId?: Prisma.SortOrder
   firstName?: Prisma.SortOrderInput | Prisma.SortOrder
   lastName?: Prisma.SortOrderInput | Prisma.SortOrder
   jobTitle?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -340,8 +329,7 @@ export type ResumeScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"Resume"> | string
   resumeId?: Prisma.StringWithAggregatesFilter<"Resume"> | string
   title?: Prisma.StringWithAggregatesFilter<"Resume"> | string
-  userEmail?: Prisma.StringWithAggregatesFilter<"Resume"> | string
-  userName?: Prisma.StringNullableWithAggregatesFilter<"Resume"> | string | null
+  clerkUserId?: Prisma.StringWithAggregatesFilter<"Resume"> | string
   firstName?: Prisma.StringNullableWithAggregatesFilter<"Resume"> | string | null
   lastName?: Prisma.StringNullableWithAggregatesFilter<"Resume"> | string | null
   jobTitle?: Prisma.StringNullableWithAggregatesFilter<"Resume"> | string | null
@@ -358,8 +346,7 @@ export type ResumeCreateInput = {
   id?: string
   resumeId: string
   title: string
-  userEmail: string
-  userName?: string | null
+  clerkUserId: string
   firstName?: string | null
   lastName?: string | null
   jobTitle?: string | null
@@ -379,8 +366,7 @@ export type ResumeUncheckedCreateInput = {
   id?: string
   resumeId: string
   title: string
-  userEmail: string
-  userName?: string | null
+  clerkUserId: string
   firstName?: string | null
   lastName?: string | null
   jobTitle?: string | null
@@ -400,8 +386,7 @@ export type ResumeUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   resumeId?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  userEmail?: Prisma.StringFieldUpdateOperationsInput | string
-  userName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clerkUserId?: Prisma.StringFieldUpdateOperationsInput | string
   firstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   jobTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -421,8 +406,7 @@ export type ResumeUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   resumeId?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  userEmail?: Prisma.StringFieldUpdateOperationsInput | string
-  userName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clerkUserId?: Prisma.StringFieldUpdateOperationsInput | string
   firstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   jobTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -442,8 +426,7 @@ export type ResumeCreateManyInput = {
   id?: string
   resumeId: string
   title: string
-  userEmail: string
-  userName?: string | null
+  clerkUserId: string
   firstName?: string | null
   lastName?: string | null
   jobTitle?: string | null
@@ -460,8 +443,7 @@ export type ResumeUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   resumeId?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  userEmail?: Prisma.StringFieldUpdateOperationsInput | string
-  userName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clerkUserId?: Prisma.StringFieldUpdateOperationsInput | string
   firstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   jobTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -478,8 +460,7 @@ export type ResumeUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   resumeId?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  userEmail?: Prisma.StringFieldUpdateOperationsInput | string
-  userName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clerkUserId?: Prisma.StringFieldUpdateOperationsInput | string
   firstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   jobTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -496,8 +477,7 @@ export type ResumeCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   resumeId?: Prisma.SortOrder
   title?: Prisma.SortOrder
-  userEmail?: Prisma.SortOrder
-  userName?: Prisma.SortOrder
+  clerkUserId?: Prisma.SortOrder
   firstName?: Prisma.SortOrder
   lastName?: Prisma.SortOrder
   jobTitle?: Prisma.SortOrder
@@ -514,8 +494,7 @@ export type ResumeMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   resumeId?: Prisma.SortOrder
   title?: Prisma.SortOrder
-  userEmail?: Prisma.SortOrder
-  userName?: Prisma.SortOrder
+  clerkUserId?: Prisma.SortOrder
   firstName?: Prisma.SortOrder
   lastName?: Prisma.SortOrder
   jobTitle?: Prisma.SortOrder
@@ -532,8 +511,7 @@ export type ResumeMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   resumeId?: Prisma.SortOrder
   title?: Prisma.SortOrder
-  userEmail?: Prisma.SortOrder
-  userName?: Prisma.SortOrder
+  clerkUserId?: Prisma.SortOrder
   firstName?: Prisma.SortOrder
   lastName?: Prisma.SortOrder
   jobTitle?: Prisma.SortOrder
@@ -609,8 +587,7 @@ export type ResumeCreateWithoutExperiencesInput = {
   id?: string
   resumeId: string
   title: string
-  userEmail: string
-  userName?: string | null
+  clerkUserId: string
   firstName?: string | null
   lastName?: string | null
   jobTitle?: string | null
@@ -629,8 +606,7 @@ export type ResumeUncheckedCreateWithoutExperiencesInput = {
   id?: string
   resumeId: string
   title: string
-  userEmail: string
-  userName?: string | null
+  clerkUserId: string
   firstName?: string | null
   lastName?: string | null
   jobTitle?: string | null
@@ -665,8 +641,7 @@ export type ResumeUpdateWithoutExperiencesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   resumeId?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  userEmail?: Prisma.StringFieldUpdateOperationsInput | string
-  userName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clerkUserId?: Prisma.StringFieldUpdateOperationsInput | string
   firstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   jobTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -685,8 +660,7 @@ export type ResumeUncheckedUpdateWithoutExperiencesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   resumeId?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  userEmail?: Prisma.StringFieldUpdateOperationsInput | string
-  userName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clerkUserId?: Prisma.StringFieldUpdateOperationsInput | string
   firstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   jobTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -705,8 +679,7 @@ export type ResumeCreateWithoutEducationInput = {
   id?: string
   resumeId: string
   title: string
-  userEmail: string
-  userName?: string | null
+  clerkUserId: string
   firstName?: string | null
   lastName?: string | null
   jobTitle?: string | null
@@ -725,8 +698,7 @@ export type ResumeUncheckedCreateWithoutEducationInput = {
   id?: string
   resumeId: string
   title: string
-  userEmail: string
-  userName?: string | null
+  clerkUserId: string
   firstName?: string | null
   lastName?: string | null
   jobTitle?: string | null
@@ -761,8 +733,7 @@ export type ResumeUpdateWithoutEducationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   resumeId?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  userEmail?: Prisma.StringFieldUpdateOperationsInput | string
-  userName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clerkUserId?: Prisma.StringFieldUpdateOperationsInput | string
   firstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   jobTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -781,8 +752,7 @@ export type ResumeUncheckedUpdateWithoutEducationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   resumeId?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  userEmail?: Prisma.StringFieldUpdateOperationsInput | string
-  userName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clerkUserId?: Prisma.StringFieldUpdateOperationsInput | string
   firstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   jobTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -801,8 +771,7 @@ export type ResumeCreateWithoutSkillsInput = {
   id?: string
   resumeId: string
   title: string
-  userEmail: string
-  userName?: string | null
+  clerkUserId: string
   firstName?: string | null
   lastName?: string | null
   jobTitle?: string | null
@@ -821,8 +790,7 @@ export type ResumeUncheckedCreateWithoutSkillsInput = {
   id?: string
   resumeId: string
   title: string
-  userEmail: string
-  userName?: string | null
+  clerkUserId: string
   firstName?: string | null
   lastName?: string | null
   jobTitle?: string | null
@@ -857,8 +825,7 @@ export type ResumeUpdateWithoutSkillsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   resumeId?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  userEmail?: Prisma.StringFieldUpdateOperationsInput | string
-  userName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clerkUserId?: Prisma.StringFieldUpdateOperationsInput | string
   firstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   jobTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -877,8 +844,7 @@ export type ResumeUncheckedUpdateWithoutSkillsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   resumeId?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  userEmail?: Prisma.StringFieldUpdateOperationsInput | string
-  userName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clerkUserId?: Prisma.StringFieldUpdateOperationsInput | string
   firstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   jobTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -946,8 +912,7 @@ export type ResumeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   id?: boolean
   resumeId?: boolean
   title?: boolean
-  userEmail?: boolean
-  userName?: boolean
+  clerkUserId?: boolean
   firstName?: boolean
   lastName?: boolean
   jobTitle?: boolean
@@ -968,8 +933,7 @@ export type ResumeSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extens
   id?: boolean
   resumeId?: boolean
   title?: boolean
-  userEmail?: boolean
-  userName?: boolean
+  clerkUserId?: boolean
   firstName?: boolean
   lastName?: boolean
   jobTitle?: boolean
@@ -986,8 +950,7 @@ export type ResumeSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extens
   id?: boolean
   resumeId?: boolean
   title?: boolean
-  userEmail?: boolean
-  userName?: boolean
+  clerkUserId?: boolean
   firstName?: boolean
   lastName?: boolean
   jobTitle?: boolean
@@ -1004,8 +967,7 @@ export type ResumeSelectScalar = {
   id?: boolean
   resumeId?: boolean
   title?: boolean
-  userEmail?: boolean
-  userName?: boolean
+  clerkUserId?: boolean
   firstName?: boolean
   lastName?: boolean
   jobTitle?: boolean
@@ -1018,7 +980,7 @@ export type ResumeSelectScalar = {
   updatedAt?: boolean
 }
 
-export type ResumeOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "resumeId" | "title" | "userEmail" | "userName" | "firstName" | "lastName" | "jobTitle" | "address" | "phone" | "email" | "summary" | "themeColor" | "createdAt" | "updatedAt", ExtArgs["result"]["resume"]>
+export type ResumeOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "resumeId" | "title" | "clerkUserId" | "firstName" | "lastName" | "jobTitle" | "address" | "phone" | "email" | "summary" | "themeColor" | "createdAt" | "updatedAt", ExtArgs["result"]["resume"]>
 export type ResumeInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   experiences?: boolean | Prisma.Resume$experiencesArgs<ExtArgs>
   education?: boolean | Prisma.Resume$educationArgs<ExtArgs>
@@ -1039,8 +1001,7 @@ export type $ResumePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     id: string
     resumeId: string
     title: string
-    userEmail: string
-    userName: string | null
+    clerkUserId: string
     firstName: string | null
     lastName: string | null
     jobTitle: string | null
@@ -1480,8 +1441,7 @@ export interface ResumeFieldRefs {
   readonly id: Prisma.FieldRef<"Resume", 'String'>
   readonly resumeId: Prisma.FieldRef<"Resume", 'String'>
   readonly title: Prisma.FieldRef<"Resume", 'String'>
-  readonly userEmail: Prisma.FieldRef<"Resume", 'String'>
-  readonly userName: Prisma.FieldRef<"Resume", 'String'>
+  readonly clerkUserId: Prisma.FieldRef<"Resume", 'String'>
   readonly firstName: Prisma.FieldRef<"Resume", 'String'>
   readonly lastName: Prisma.FieldRef<"Resume", 'String'>
   readonly jobTitle: Prisma.FieldRef<"Resume", 'String'>

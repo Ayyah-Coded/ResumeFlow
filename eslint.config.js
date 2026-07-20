@@ -14,8 +14,7 @@ export default defineConfig([
       reactRefresh.configs.vite,
     ],
     languageOptions: {
-      ...globals.node,
-      globals: globals.browser,
+      globals: { ...globals.node, ...globals.browser },
       parserOptions: { ecmaFeatures: { jsx: true } },
     },
   },

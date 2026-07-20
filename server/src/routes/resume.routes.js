@@ -3,7 +3,10 @@ import {
   createResume,
   getUserResumes,
   getResumeById,
-  updateResume
+  updateResume,
+  updateSkills,
+  updateExperiences,
+  updateEducation
 } from "../controllers/resume.controller.js";
 
 const router = express.Router();

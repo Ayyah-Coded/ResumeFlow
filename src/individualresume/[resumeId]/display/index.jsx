@@ -9,36 +9,34 @@ import ResumePreview from '@/dashboard/resume/components/ResumePreview';
 import Header from '@/components/custom/Header';
 
 import { Button } from '@/components/ui/button';
-import { useUser } from '@clerk/react';
+import { useUser } from '@clerk/clerk-react';
+import { toast } from 'sonner';
 
 function DisplayResume () {
   const { user } = useUser();
+  const [ loading, setLoading ] = useState(false);
   const [ resumeInfo, setResumeInfo ] = useState();
   const { resumeId } = useParams();
 
-  useEffect(() => {
-  if (user?.primaryEmailAddress?.emailAddress) {
-    GetUserResumeList();
-  }
-  }, [user]);
 
-  const GetUserResumeList = async () => {
+    const getResumeInfo = async () => {
     try {
       setLoading(true);
+      const response = await GlobalApi.getResumeById(resumeId);
+      setResumeInfo(response.data);
+     } catch (error) {
+      console.error("GET_RESUME_ERROR:", error);
+      toast.error("Failed to load resume");
+     } finally {
+       setLoading(false);
+     }
+   };
 
-      const email = user.primaryEmailAddress.emailAddress;
-
-      const response = await GlobalApi.getUserResumes(email);
-
-      setResumeList(response.data || []);
-    } catch (error) {
-      console.error("GET_USER_RESUMES_ERROR:", error);
-
-      toast.error("Failed to load resumes");
-    } finally {
-      setLoading(false);
-    }
-  };
+  useEffect(() => {
+  if (user?.primaryEmailAddress?.emailAddress) {
+    getResumeInfo();
+  }
+  }, [user]);
 
   const HandleDownload = () => {
     window.print();

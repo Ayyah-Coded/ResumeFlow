@@ -11,24 +11,15 @@ import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import { LoaderCircle } from 'lucide-react';
 
-const formField = {
-  title:'',
-  companyName:'',
-  city:'',
-  state:'',
-  startDate:'',
-  endDate:'',
-  workSummary:''
-}
 
-function Experience () {
+function Experience ({ enabledNext }) {
   const {resumeId} = useParams();
   const [ loading, setLoading ] = useState(false);
   const { resumeInfo, setResumeInfo } = useContext(ResumeInfoContext);
   
   const [ experienceList, setExperienceList ] = useState(
-    resumeInfo?.Experience?.length 
-    ? resumeInfo.Experience 
+    resumeInfo?.experience?.length
+    ? resumeInfo.experiences 
     : [
           {
             title: "",
@@ -78,7 +69,7 @@ function Experience () {
         state: "",
         startDate: "",
         endDate: "",
-        workSummery: "",
+        workSummary: "",
       },
     ]);
   };
@@ -100,8 +91,7 @@ function Experience () {
     setExperienceList(newEntries);
   };
 
-  const onSave = async (e) => {
-    e.preventDefault();
+  const onSave = async () => {
     setLoading(true)
     try {
       const experiences = experienceList.map(
@@ -139,27 +129,27 @@ function Experience () {
           <div className='grid grid-cols-2 gap-3 border p-3 my-5 rounded-lg'>
             <div>
               <label className='text-xs'>Position Title</label>
-              <Input name ="title" onChange = {(event) => handleChange(index,event)} defaultValue={item?.title} />
+              <Input name ="title" onChange = {(e) => handleChange(index, e.target.name, e.target.value)} defaultValue={item?.title} />
             </div>
             <div>
                 <label className='text-xs'>Company Name</label>
-                <Input name="companyName" onChange={(event)=>handleChange(index,event)} defaultValue={item?.companyName} />
+                <Input name="companyName" onChange={(e) => handleChange(index, e.target.name, e.target.value)} defaultValue={item?.companyName} />
             </div>
             <div>
                 <label className='text-xs'>City</label>
-                <Input name="city" onChange={(event)=>handleChange(index,event)} defaultValue={item?.city}/>
+                <Input name ="city" onChange = {(e) => handleChange(index, e.target.name, e.target.value)} defaultValue={item?.city} />
             </div>
             <div>
                 <label className='text-xs'>State</label>
-                <Input name="state" onChange={(event)=>handleChange(index,event)} defaultValue={item?.state} />
+                <Input name="state" onChange={(e)=>handleChange(index, e.target.name, e.target.value)} defaultValue={item?.state} />
             </div>
             <div>
                 <label className='text-xs'>Start Date</label>
-                <Input type="date" name="startDate" onChange={(event)=>handleChange(index,event)} defaultValue={item?.startDate} />
+                <Input type="date" name="startDate" onChange={(e)=>handleChange(index, e.target.name, e.target.value)} defaultValue={item?.startDate} />
             </div>
             <div>
                 <label className='text-xs'>End Date</label>
-                <Input type="date" name="endDate" onChange={(event)=>handleChange(index,event)} defaultValue={item?.endDate} />
+                <Input type="date" name="endDate" onChange={(e)=>handleChange(index, e.target.name, e.target.value)} defaultValue={item?.endDate} />
             </div>
 
             <div className='col-span-2'>

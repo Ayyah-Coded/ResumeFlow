@@ -11,6 +11,7 @@ import { toast } from 'sonner';
 
 function EditResume() {
   const { resumeId } = useParams();
+  const [ loading, setLoading ] = useState(false);
   const [ resumeInfo, setResumeInfo] = useState();
   
   useEffect( () => {       
@@ -39,8 +40,7 @@ function EditResume() {
       <LoaderCircle className="animate-spin" />
     </div>
   );
-  }
-  
+  }  
   return (
     <ResumeInfoContext.Provider value={{ resumeInfo, setResumeInfo }}>
     <div className='grid grid-cols-1 md:grid-cols-2 p-10 gap-10'>
