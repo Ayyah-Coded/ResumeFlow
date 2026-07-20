@@ -83,7 +83,6 @@ model AiUsage {
   updatedAt DateTime @updatedAt
 
   @@unique([clerkUserId, usageDate])
-  @@index([clerkUserId])
 }
 
 model Skill {

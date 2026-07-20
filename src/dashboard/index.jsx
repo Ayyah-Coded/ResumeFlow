@@ -1,14 +1,16 @@
+import { useMemo } from "react";
 import { useCallback, useEffect, useState } from "react";
 
+import GlobalApi from "@/services/GlobalApi";
 import AddResume from "./components/AddResume";
+import { useAxiosClient } from "@/hooks/useAxiosClient";
 import ResumeCardItem from "./components/ResumeCardItem";
 
-import GlobalApi from "@/services/GlobalApi";
-import { useAxiosClient } from "@/hooks/useAxiosClient";
 
 function Dashboard() {
   const axiosClient = useAxiosClient();
-  const api = GlobalApi(axiosClient);
+  const api = useMemo(() => GlobalApi(axiosClient), [axiosClient]);
+
   const [resumeList, setResumeList] = useState([]);
   const [loading, setLoading] = useState(true)
 

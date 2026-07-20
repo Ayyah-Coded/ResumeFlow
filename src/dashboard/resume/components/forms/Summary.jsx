@@ -136,10 +136,15 @@ function Summary({ enabledNext }) {
               onClick={generatedSummaryFromAI}
               type="button"
               size="sm"
+              disabled={loading}
               className="border-primary text-primary flex gap-2"
             >
-              <Brain className="h-4 w-4" />
-              Generate from AI
+              {loading ? (
+               <LoaderCircle className="h-4 w-4 animate-spin" />
+                 ) : (
+                   <Brain className="h-4 w-4" />
+                 )}
+                 Generate from AI
             </Button>
           </div>
 

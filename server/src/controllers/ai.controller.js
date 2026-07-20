@@ -38,9 +38,11 @@ export const generateSummary = async ( req, res ) => {
       error
     );
 
+    error.statusCode = 429;
+    error.code = "DAILY_LIMIT_REACHED";
     if (
       usageReservation &&
-      error.statusCode !== 429
+      error.code !== "DAILY_LIMIT_REACHED"
     ) {
       await refundAiUsage(
         userId,
@@ -48,7 +50,7 @@ export const generateSummary = async ( req, res ) => {
       );
     }
 
-    if (error.statusCode === 429) {
+    if (error.code === "DAILY_LIMIT_REACHED") {
       return res.status(429).json({
         success: false,
         message:

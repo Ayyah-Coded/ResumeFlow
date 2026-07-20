@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useMemo, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { RWebShare } from 'react-web-share';
 
@@ -16,7 +16,7 @@ function DisplayResume() {
   const { resumeId } = useParams();
 
   const axiosClient = useAxiosClient();
-  const api = GlobalApi(axiosClient);
+  const api = useMemo(() => GlobalApi(axiosClient), [axiosClient]);
 
   const [loading, setLoading] = useState(true);
   const [resumeInfo, setResumeInfo] = useState(null);
