@@ -2,6 +2,7 @@ import "dotenv/config";
 import cors from 'cors';
 import express from "express";
 
+import aiRoutes from "./routes/ai.routes.js";
 import { clerkMiddleware } from "@clerk/express";
 import resumeRoutes from "./routes/resume.routes.js";
 
@@ -10,10 +11,14 @@ const app = express();
 app.use(express.json());
 app.use(clerkMiddleware());
 
-app.use(cors({
-  origin: process.env.CLIENT_URL,
-  credentials: true
-}));
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 
 app.get("/health", (req, res) => {
   res.json({
@@ -22,6 +27,7 @@ app.get("/health", (req, res) => {
   });
 });
 
+app.use("/api/ai", aiRoutes);
 
 app.use("/api/resumes", resumeRoutes);
 

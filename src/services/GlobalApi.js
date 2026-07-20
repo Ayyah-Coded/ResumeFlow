@@ -15,6 +15,11 @@ const GlobalApi = (axiosClient) => ({
       `/api/resumes/${resumeId}`
     ),
 
+  generateSummary: (jobTitle) =>
+    axiosClient.post(
+      "/api/ai/summary", { jobTitle }
+    ),
+
   updateResume: (resumeId, data) =>
     axiosClient.patch(
       `/api/resumes/${resumeId}`,

@@ -425,14 +425,6 @@ export type SkillUncheckedUpdateManyWithoutResumeNestedInput = {
   deleteMany?: Prisma.SkillScalarWhereInput | Prisma.SkillScalarWhereInput[]
 }
 
-export type IntFieldUpdateOperationsInput = {
-  set?: number
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
-}
-
 export type SkillCreateWithoutResumeInput = {
   id?: string
   name: string

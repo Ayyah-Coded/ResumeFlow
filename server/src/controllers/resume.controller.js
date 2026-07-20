@@ -1,10 +1,10 @@
-import { prisma } from "../db/prisma.js";
+import {prisma} from "../db/prisma.js";
 
-const getOwnedResumeOrThrow = async (client, resumeId, clerkUserId) => {
-  const resume = await client.resume.findFirst({
+const getOwnedResumeOrThrow = async (resumeId, userId) => {
+  const resume = await prisma.resume.findFirst({
     where: {
       resumeId,
-      clerkUserId,
+      clerkUserId: userId,
     },
   });
 

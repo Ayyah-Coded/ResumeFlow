@@ -11,5 +11,6 @@
 export type * from './models/Resume.ts'
 export type * from './models/Experience.ts'
 export type * from './models/Education.ts'
+export type * from './models/AiUsage.ts'
 export type * from './models/Skill.ts'
 export type * from './commonInputTypes.ts'

@@ -387,6 +387,7 @@ export const ModelName = {
   Resume: 'Resume',
   Experience: 'Experience',
   Education: 'Education',
+  AiUsage: 'AiUsage',
   Skill: 'Skill'
 } as const
 
@@ -403,7 +404,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "resume" | "experience" | "education" | "skill"
+    modelProps: "resume" | "experience" | "education" | "aiUsage" | "skill"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -629,6 +630,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    AiUsage: {
+      payload: Prisma.$AiUsagePayload<ExtArgs>
+      fields: Prisma.AiUsageFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.AiUsageFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AiUsagePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.AiUsageFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AiUsagePayload>
+        }
+        findFirst: {
+          args: Prisma.AiUsageFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AiUsagePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.AiUsageFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AiUsagePayload>
+        }
+        findMany: {
+          args: Prisma.AiUsageFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AiUsagePayload>[]
+        }
+        create: {
+          args: Prisma.AiUsageCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AiUsagePayload>
+        }
+        createMany: {
+          args: Prisma.AiUsageCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.AiUsageCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AiUsagePayload>[]
+        }
+        delete: {
+          args: Prisma.AiUsageDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AiUsagePayload>
+        }
+        update: {
+          args: Prisma.AiUsageUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AiUsagePayload>
+        }
+        deleteMany: {
+          args: Prisma.AiUsageDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.AiUsageUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.AiUsageUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AiUsagePayload>[]
+        }
+        upsert: {
+          args: Prisma.AiUsageUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AiUsagePayload>
+        }
+        aggregate: {
+          args: Prisma.AiUsageAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateAiUsage>
+        }
+        groupBy: {
+          args: Prisma.AiUsageGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AiUsageGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.AiUsageCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AiUsageCountAggregateOutputType> | number
+        }
+      }
+    }
     Skill: {
       payload: Prisma.$SkillPayload<ExtArgs>
       fields: Prisma.SkillFieldRefs
@@ -793,6 +868,18 @@ export const EducationScalarFieldEnum = {
 } as const
 
 export type EducationScalarFieldEnum = (typeof EducationScalarFieldEnum)[keyof typeof EducationScalarFieldEnum]
+
+
+export const AiUsageScalarFieldEnum = {
+  id: 'id',
+  clerkUserId: 'clerkUserId',
+  usageDate: 'usageDate',
+  count: 'count',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AiUsageScalarFieldEnum = (typeof AiUsageScalarFieldEnum)[keyof typeof AiUsageScalarFieldEnum]
 
 
 export const SkillScalarFieldEnum = {
@@ -1005,6 +1092,7 @@ export type GlobalOmitConfig = {
   resume?: Prisma.ResumeOmit
   experience?: Prisma.ExperienceOmit
   education?: Prisma.EducationOmit
+  aiUsage?: Prisma.AiUsageOmit
   skill?: Prisma.SkillOmit
 }
 

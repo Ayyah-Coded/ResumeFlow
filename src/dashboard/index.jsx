@@ -10,7 +10,7 @@ function Dashboard() {
   const axiosClient = useAxiosClient();
   const api = GlobalApi(axiosClient);
   const [resumeList, setResumeList] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true)
 
   const getResumesList = useCallback(async () => {
     try {

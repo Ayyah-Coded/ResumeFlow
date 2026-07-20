@@ -54,6 +54,7 @@ export const ModelName = {
   Resume: 'Resume',
   Experience: 'Experience',
   Education: 'Education',
+  AiUsage: 'AiUsage',
   Skill: 'Skill'
 } as const
 
@@ -124,6 +125,18 @@ export const EducationScalarFieldEnum = {
 } as const
 
 export type EducationScalarFieldEnum = (typeof EducationScalarFieldEnum)[keyof typeof EducationScalarFieldEnum]
+
+
+export const AiUsageScalarFieldEnum = {
+  id: 'id',
+  clerkUserId: 'clerkUserId',
+  usageDate: 'usageDate',
+  count: 'count',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AiUsageScalarFieldEnum = (typeof AiUsageScalarFieldEnum)[keyof typeof AiUsageScalarFieldEnum]
 
 
 export const SkillScalarFieldEnum = {

@@ -72,29 +72,28 @@ function AddResume() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Create New Resume</DialogTitle>
-            <DialogDescription>
-              <p>Add a title for your new resume</p>
-              <Input 
-                className ="my-2" 
-                placeholder ="Ex.Full Stack resume"
-                onChange = { (e) => setResumeTitle(e.target.value) }
-              />
-              <div className ='flex justify-end gap-5'>
-                <Button onClick = {() => setOpenDialog(false)} variant="ghost">
-                  Cancel
-                </Button>
-                <Button disabled = { !resumeTitle || loading } onClick = { () => onCreate() }>
-                  {loading?
-                  <Loader2 className = 'animate-spin' /> :'Create'   
-                }
-                </Button>
-              </div>
-            </DialogDescription>
+            <DialogDescription>Add a title for your new resume</DialogDescription>
           </DialogHeader>
+                
+          <Input 
+            className ="my-2" 
+            placeholder ="Ex.Full Stack resume"
+            onChange = { (e) => setResumeTitle(e.target.value) }
+          />
+          <div className ='flex justify-end gap-5'>
+            <Button onClick = {() => setOpenDialog(false)} variant="ghost">
+              Cancel
+            </Button>
+            <Button disabled = { !resumeTitle || loading } onClick = { () => onCreate() }>
+              {loading?
+              <Loader2 className = 'animate-spin' /> :'Create'   
+            }
+            </Button>
+          </div>             
         </DialogContent>
       </Dialog>
     </div>
   )
 }
 
-export default AddResume;
+export default AddResume

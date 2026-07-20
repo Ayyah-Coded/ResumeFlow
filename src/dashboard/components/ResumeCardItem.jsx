@@ -1,6 +1,9 @@
-import { Loader2Icon, MoreVertical } from 'lucide-react';
 import { useState } from 'react';
+import { toast } from 'sonner'
+import GlobalApi from '@/services/GlobalApi'
 import { Link, useNavigate } from 'react-router-dom';
+import { useAxiosClient } from '@/hooks/useAxiosClient';
+import { Loader2Icon, MoreVertical } from 'lucide-react';
 
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
@@ -8,19 +11,22 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 
-import GlobalApi from '@/services/GlobalApi'
-import { toast } from 'sonner'
 
 function ResumeCardItem ({ resume,refreshData }) {
+  const axiosClient = useAxiosClient();
+  const api = GlobalApi(axiosClient);
+
   const navigation = useNavigate();
   const [ openAlert, setOpenAlert ] = useState(false);
   const [ loading, setLoading ] = useState(false);
 
   const onDelete = () => {
     setLoading(true);
-    GlobalApi.deleteResume(resume.documentId).then(resp => {
+
+    api.deleteResume(resume.resumeId).then(resp => {
       console.log(resp);
       toast('Resume Deleted!');
+
       refreshData()
       setLoading(false);
       setOpenAlert(false);
@@ -30,7 +36,7 @@ function ResumeCardItem ({ resume,refreshData }) {
   }
   return (    
     <div className =''>
-      <Link to={`/dashboard/resume/${resume.documentId}/edit`}>
+      <Link to={`/dashboard/resume/${resume.resumeId}/edit`}>
         <div 
           className ='p-14 bg-gradient-to-b from-pink-100 via-purple-200 to-blue-200 flex items-center justify-center h-[280px] border-t-4 rounded-lg hover:scale-105 transition-all hover:shadow-md shadow-primary'
           style = {{ borderColor: resume?.themeColor }}
@@ -51,13 +57,13 @@ function ResumeCardItem ({ resume,refreshData }) {
           <MoreVertical className ='h-4 w-4 cursor-pointer'/>
         </DropdownMenuTrigger>
         <DropdownMenuContent>        
-          <DropdownMenuItem  onClick = {() => navigation(`/dashboard/resume/${resume.documentId}/edit`)}>
+          <DropdownMenuItem  onClick = {() => navigation(`/dashboard/resume/${resume.resumeId}/edit`)}>
             Edit
           </DropdownMenuItem>
-          <DropdownMenuItem onClick = {() => navigation(`/individualresume/${resume.documentId}/display`)}>
+          <DropdownMenuItem onClick = {() => navigation(`/individualresume/${resume.resumeId}/display`)}>
             View
           </DropdownMenuItem>
-          <DropdownMenuItem onClick = {() => navigation(`/individualresume/${resume.documentId}/display`)}>
+          <DropdownMenuItem onClick = {() => navigation(`/individualresume/${resume.resumeId}/display`)}>
             Download
           </DropdownMenuItem>
           <DropdownMenuItem onClick = {() => setOpenAlert(true)}>

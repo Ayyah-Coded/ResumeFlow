@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { toast } from 'sonner';
@@ -17,26 +17,29 @@ function EditResume() {
   const { resumeId } = useParams();
   const [ loading, setLoading ] = useState(false);
   const [ resumeInfo, setResumeInfo] = useState();
-  
-  useEffect( () => {       
+
+  const getResumeInfo = useCallback(async () => {
+
+    if (!resumeId) return;
+
+    try {
+      setLoading(true);
+
+      const response = await api.getResumeById(resumeId);
+
+      setResumeInfo(response.data);
+    } catch (error) {
+      console.error("GET_RESUME_ERROR:", error);
+
+      toast.error("Failed to load resume");
+    } finally {
+      setLoading(false);
+    }
+    }, [api, resumeId])
+
+   useEffect( () => {       
     getResumeInfo();
   },[resumeId]);
-
-  const getResumeInfo = async () => {
-  try {
-    setLoading(true);
-
-    const response = await api.getResumeById(resumeId);
-
-    setResumeInfo(response.data);
-  } catch (error) {
-    console.error("GET_RESUME_ERROR:", error);
-
-    toast.error("Failed to load resume");
-  } finally {
-    setLoading(false);
-  }
-  };
 
   if (loading) {
   return (

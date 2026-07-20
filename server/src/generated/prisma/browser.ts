@@ -33,6 +33,11 @@ export type Experience = Prisma.ExperienceModel
  */
 export type Education = Prisma.EducationModel
 /**
+ * Model AiUsage
+ * 
+ */
+export type AiUsage = Prisma.AiUsageModel
+/**
  * Model Skill
  * 
  */

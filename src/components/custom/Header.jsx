@@ -1,5 +1,5 @@
 import { UserButton, useUser } from "@clerk/react";
-import { Button } from "../ui/button";
+import { Button, buttonVariants } from "../ui/button";
 import { Link } from "react-router-dom";
 
 
@@ -14,9 +14,14 @@ function Header() {
       
       {isSignedIn 
         ? <div className="flex gap-2 items-center">
-            <Button asChild variant="outline">
-              <Link to="/dashboard">Dashboard</Link>
-            </Button>
+            <Link
+              to="/dashboard"
+              className={buttonVariants({
+                variant: "default",
+              })}
+            >
+              Dashboard
+            </Link>
             <UserButton/>
           </div>        
         : <Link to={'/auth/sign-in'}>
