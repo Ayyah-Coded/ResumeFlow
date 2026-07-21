@@ -30,7 +30,7 @@ function EditResume() {
 
       const response = await api.getResumeById(resumeId);
 
-      setResumeInfo(response.data);
+      setResumeInfo(response.data.data);
     } catch (error) {
       console.error("GET_RESUME_ERROR:", error);
 

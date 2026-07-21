@@ -18,11 +18,11 @@ function ResumePreview() {
         {/* Personal Detail  */}
             <PersonalDetailPreview resumeInfo = { resumeInfo } />
 
-        {/* Summery  */}
+        {/* Summary  */}
             <SummaryPreview resumeInfo = { resumeInfo } />
 
         {/* Professional Experience  */}
-           {resumeInfo?.Experience?.length > 0 && <ExperiencePreview resumeInfo = { resumeInfo } />}
+          {resumeInfo?.experiences?.length > 0 && <ExperiencePreview resumeInfo = { resumeInfo } />}
 
         {/* Educational  */}
         {resumeInfo?.education?.length > 0 && <EducationalPreview resumeInfo = { resumeInfo } />}
