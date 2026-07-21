@@ -1,9 +1,15 @@
 import { useCallback, useState } from 'react';
+import { useAuth } from '@clerk/react';
 
 import { useAxiosClient } from './useAxiosClient';
 
 
 export function useAiUsage() {
+  const {
+    isLoaded,
+    isSignedIn,
+  } = useAuth();
+
   const axiosClient = useAxiosClient();
 
   const [aiUsage, setAiUsage] = useState(null);
@@ -11,6 +17,10 @@ export function useAiUsage() {
 
 
   const getAiUsage = useCallback(async () => {
+    if (!isLoaded || !isSignedIn) {
+      return;
+    }
+
     try {
       setLoading(true);
 
@@ -33,7 +43,11 @@ export function useAiUsage() {
     } finally {
       setLoading(false);
     }
-  }, [axiosClient]);
+  }, [
+    axiosClient,
+    isLoaded,
+    isSignedIn,
+  ]);
 
 
   return {

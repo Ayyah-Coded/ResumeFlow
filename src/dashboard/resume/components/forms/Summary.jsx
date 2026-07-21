@@ -40,32 +40,20 @@ function Summary({ enabledNext }) {
 
   const generatedSummaryFromAI = async () => {
     if (!resumeInfo?.jobTitle) {
-      toast.error(
-        'Please enter a job title first.'
-      );
+      toast.error('Please enter a job title first.' );
       return;
     }
     setLoading(true);
     try {
-      const response = await api.generateSummary(
-        resumeInfo.jobTitle
-      );
+      const response = await api.generateSummary( resumeInfo.jobTitle );
 
-      setAiGeneratedSummaryList(
-        response.data.data
-      );
+      setAiGeneratedSummaryList(response.data.data);
 
       setAiUsage(response.data.usage);
     } catch (error) {
-      console.error(
-        'GENERATE_SUMMARY_ERROR:',
-        error
-      );
-
-      toast.error(
-        error.response?.data?.message ||
-        'Failed to generate summary'
-      );
+      console.error('GENERATE_SUMMARY_ERROR:', error);
+        
+      toast.error(error.response?.data?.message || 'Failed to generate summary');
     } finally {
       setLoading(false);
     }
@@ -86,24 +74,15 @@ function Summary({ enabledNext }) {
     setLoading(true);
 
     try {
-      await api.updateResume(resumeId, {
-        summary,
-      });
+      await api.updateResume(resumeId, { summary });
 
       enabledNext(true);
 
-      toast.success(
-        'Summary updated'
-      );
+      toast.success('Summary updated');
     } catch (error) {
-      console.error(
-        'UPDATE_SUMMARY_ERROR:',
-        error
-      );
+      console.error('UPDATE_SUMMARY_ERROR:', error);
 
-      toast.error(
-        'Failed to update summary'
-      );
+      toast.error('Failed to update summary');
     } finally {
       setLoading(false);
     }
@@ -120,13 +99,21 @@ function Summary({ enabledNext }) {
         </p>
 
         {aiUsage && (
-          <p className="text-xs text-muted-foreground mt-1">
-            AI generations remaining today:{' '}
-            <span className="font-medium text-primary">
-              {aiUsage.remaining}
-            </span>
-          </p>
-        )};
+          <>
+            <p className="text-xs text-muted-foreground mt-1">
+              AI generations remaining today:{' '}
+              <span className="font-medium text-primary">
+                {aiUsage.remaining}
+              </span>
+            </p>
+
+            {aiUsage.remaining === 0 && (
+              <p className="text-xs text-destructive mt-1">
+                Daily AI limit reached. Try again tomorrow.
+              </p>
+            )}
+          </>
+        )}
 
         <form
           className="mt-7"
@@ -164,7 +151,7 @@ function Summary({ enabledNext }) {
           <div className="mt-2 flex justify-end">
             <Button
               type="submit"
-              disabled={loading}
+              disabled={loading || aiUsage?.remaining === 0}
             >
               {loading ? (
                 <LoaderCircle className="animate-spin" />

@@ -42,15 +42,15 @@ function FormSection() {
             : activeFormIndex == 2
               ? <Summary  enabledNext = {(v) => setEnableNext(v)} />
               : activeFormIndex == 3
-                ? <Experience />  
+                ? <Experience enabledNext = {(v) => setEnableNext(v)} />  
                 : activeFormIndex == 4
-                  ? <Education/>
+                  ? <Education enabledNext = {(v) => setEnableNext(v)} />
                   : activeFormIndex == 5
-                    ? <Skills/>
+                    ? <Skills enabledNext = {(v) => setEnableNext(v)} />
                     : activeFormIndex == 6
                       ? <Navigate to={`/individualresume/${resumeId}/display`}/>
                       : null
-          };
+          }
     </div>
   );
 };

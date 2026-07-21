@@ -45,31 +45,47 @@ export const reserveAiUsage = async (
     async (tx) => {
       await tx.aiUsage.upsert({
         where: {
-          clerkUserId_usageDate: { clerkUserId, usageDate },
+          clerkUserId_usageDate: {
+            clerkUserId,
+            usageDate,
+          },
         },
         update: {},
-        create: { clerkUserId, usageDate, count: 0 },
+        create: {
+          clerkUserId,
+          usageDate,
+          count: 0,
+        },
       });
 
       return tx.aiUsage.updateMany({
         where: {
           clerkUserId,
           usageDate,
-          count: { lt: DAILY_AI_LIMIT },
+          count: {
+            lt: DAILY_AI_LIMIT,
+          },
         },
         data: {
-          count: { increment: 1 },
+          count: {
+            increment: 1,
+          },
         },
       });
+    },
+    {
+      maxWait: 10_000,
+      timeout: 10_000,
     }
   );
 
   if (result.count === 0) {
     const error = new Error(
-      "Daily AI generation limit reached"
+      'Daily AI generation limit reached'
     );
 
     error.statusCode = 429;
+    error.code = 'DAILY_LIMIT_REACHED';
 
     throw error;
   }

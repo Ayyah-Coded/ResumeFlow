@@ -3,6 +3,12 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
-    }
-  }
+    },
+    "checkJs": false
+  },
+  "exclude": [
+    "node_modules",
+    "dist",
+    "build"
+  ]
 }

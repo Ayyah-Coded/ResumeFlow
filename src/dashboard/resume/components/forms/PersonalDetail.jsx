@@ -180,7 +180,7 @@ function PersonalDetail({ enabledNext }) {
         </div>
       </form>
     </div>
-  );
+  )
 }
 
 export default PersonalDetail;
