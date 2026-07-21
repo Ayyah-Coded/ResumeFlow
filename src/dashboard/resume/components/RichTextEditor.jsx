@@ -1,6 +1,6 @@
 import { toast } from 'sonner';
 import { Brain, LoaderCircle } from 'lucide-react';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { useAxiosClient } from '@/hooks/useAxiosClient';
@@ -12,29 +12,12 @@ import {
   Separator, Toolbar } from 'react-simple-wysiwyg';
 
 
-function RichTextEditor({ onRichTextEditorChange, positionTitle, defaultValue }) {
-
-  const [value, setValue] = useState(defaultValue ?? '' );
+function RichTextEditor({ onRichTextEditorChange, positionTitle, value }) {
 
   const [loading, setLoading] = useState(false);
   const { aiUsage, setAiUsage } = useContext(ResumeInfoContext);
 
   const axiosClient = useAxiosClient();
-
-
-  useEffect(() => {
-    setValue(defaultValue ?? '');
-  }, [defaultValue]);
-
-
-  const handleEditorChange = (event) => {
-    const nextValue = event.target.value;
-
-    setValue(nextValue);
-
-    onRichTextEditorChange({ target: { value: nextValue } });
-  };
-
 
   const generateExperienceFromAI = async () => {
     if (!positionTitle?.trim()) {
@@ -56,10 +39,10 @@ function RichTextEditor({ onRichTextEditorChange, positionTitle, defaultValue })
 
       const generatedText = response.data.data;
 
-      setValue(generatedText);
-
       onRichTextEditorChange({
-        target: { value: generatedText },
+        target: {
+          value: generatedText,
+        },
       });
     } catch (error) {
       console.error('GENERATE_EXPERIENCE_ERROR:', error);
@@ -103,8 +86,8 @@ function RichTextEditor({ onRichTextEditorChange, positionTitle, defaultValue })
 
       <EditorProvider>
         <Editor
-          value={value}
-          onChange={handleEditorChange}
+          value={value ?? ""}
+          onChange={onRichTextEditorChange}
         >
           <Toolbar>
             <BtnBold />

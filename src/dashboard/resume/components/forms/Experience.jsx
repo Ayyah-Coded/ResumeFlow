@@ -199,7 +199,7 @@ function Experience({ enabledNext }) {
                 <div className="col-span-2">
                   <RichTextEditor
                     positionTitle={item.title}
-                    defaultValue={item.workSummary ?? ''}
+                    value={item.workSummary ?? ''}
                     onRichTextEditorChange={(event) =>
                       handleRichTextEditor(
                         event,
