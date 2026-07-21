@@ -1,1065 +1,735 @@
-# 📄 ResumeFlow – AI-Powered ATS Resume Builder
+# ResumeFlow — AI-Powered Resume Builder
 
 <div align="center">
 
 ![React](https://img.shields.io/badge/React-19-61DAFB?logo=react)
-![Vite](https://img.shields.io/badge/Vite-7-646CFF?logo=vite)
+![Vite](https://img.shields.io/badge/Vite-8-646CFF?logo=vite)
 ![TailwindCSS](https://img.shields.io/badge/TailwindCSS-4-38BDF8?logo=tailwindcss)
-![Strapi](https://img.shields.io/badge/Strapi-5-4945FF?logo=strapi)
-![Google Gemini](https://img.shields.io/badge/Google-Gemini%202.5-4285F4?logo=google)
-![JavaScript](https://img.shields.io/badge/JavaScript-ES2024-F7DF1E?logo=javascript)
-![License](https://img.shields.io/badge/License-MIT-green)
+![Express](https://img.shields.io/badge/Express-5-000000?logo=express)
+![Prisma](https://img.shields.io/badge/Prisma-7-2D3748?logo=prisma)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?logo=postgresql)
+![Google Gemini](https://img.shields.io/badge/Google-Gemini-4285F4?logo=google)
+![Clerk](https://img.shields.io/badge/Clerk-Authentication-6C47FF?logo=clerk)
+![PNPM](https://img.shields.io/badge/pnpm-Workspace-F69220?logo=pnpm)
+![License](https://img.shields.io/badge/License-ISC-lightgrey)
 
-**An AI-powered resume builder that generates ATS-friendly resumes using Google Gemini AI with a modern React frontend and Strapi CMS backend.**
+**A full-stack, AI-powered resume builder that helps users create professional, ATS-friendly resumes — with AI-assisted content generation, live preview, theming, and shareable resume links.**
 
 </div>
 
 ---
 
-# 📑 Table of Contents
+## Table of Contents
 
-- [Project Overview](#-project-overview)
-- [Key Features](#-key-features)
-- [Project Goals](#-project-goals)
-- [Technology Stack](#-technology-stack)
-- [Architecture Overview](#-architecture-overview)
-- [Application Workflow](#-application-workflow)
-- [System Design](#-system-design)
-
----
-
-# 📖 Project Overview
-
-ResumeFlow is a modern AI-powered resume builder that helps job seekers create professional, ATS-friendly resumes within minutes.
-
-Instead of manually writing resume content, users simply provide their information while Google Gemini AI intelligently generates:
-
-- Professional summaries
-- Work experience bullet points
-- ATS-optimized resume content
-
-The application combines a beautiful React interface with AI-assisted content generation and a Strapi backend for persistent resume storage.
-
-Unlike traditional resume builders, ResumeFlow focuses on improving resume quality through AI while giving users complete control over editing every section before exporting or sharing.
-
----
-
-# ✨ Key Features
-
-## 🤖 AI Resume Generation
-
-- AI-generated professional summaries
-- AI-generated experience bullet points
-- ATS-friendly resume content
-- Multiple summary suggestions
-- Smart prompt engineering using Google Gemini 2.5 Flash
+- [Overview](#overview)
+- [Why ResumeFlow](#why-resumeflow)
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Architecture](#architecture)
+- [Application Workflow](#application-workflow)
+- [Project Structure](#project-structure)
+- [Authentication Flow](#authentication-flow)
+- [AI Content Generation](#ai-content-generation)
+- [AI Usage Quota](#ai-usage-quota)
+- [Data Model](#data-model)
+- [API Reference](#api-reference)
+- [State Management](#state-management)
+- [Security](#security)
+- [Getting Started](#getting-started)
+- [Environment Variables](#environment-variables)
+- [Running Locally](#running-locally)
+- [Production Build](#production-build)
+- [Scripts Reference](#scripts-reference)
+- [Engineering Highlights](#engineering-highlights)
+- [Technical Tradeoffs](#technical-tradeoffs)
+- [Roadmap](#roadmap)
+- [What This Project Demonstrates](#what-this-project-demonstrates)
+- [License](#license)
 
 ---
 
-## 📝 Resume Management
+## Overview
 
-- Personal Information
-- Professional Summary
-- Work Experience
+ResumeFlow is a full-stack application that helps users create professional, ATS-friendly resumes with significantly less manual writing. It combines a modern React frontend, a Node.js/Express API, Clerk authentication, PostgreSQL persistence via Prisma, and Google Gemini for AI-assisted content generation.
+
+Users can create multiple resumes, fill in their professional information, generate AI-assisted summaries and experience bullet points, preview the resume in real time, customize the theme, and download or share the finished result.
+
+> Users provide their professional information. ResumeFlow helps transform it into polished, structured resume content — while keeping the user in full control of every AI-generated result before it's saved.
+
+---
+
+## Why ResumeFlow
+
+Most resume builders require users to manually write every section from scratch. ResumeFlow removes the blank-page problem by combining:
+
+- Structured, section-based resume editing
+- AI-assisted content generation for summaries and experience
+- A single source of truth for resume state, shared between editor and preview
+- Real-time visual preview as the user types
+- Authentication-aware, per-user data access
+- Server-enforced daily AI usage limits
+
+The AI is a starting point, not a replacement — users review and edit every generated result before it's saved.
+
+---
+
+## Features
+
+### AI-Powered Content
+
+- AI-generated professional summaries (Entry, Mid, and Senior variations)
+- AI-generated, ATS-friendly experience bullet points
+- Action-oriented, HTML-formatted output ready for the rich text editor
+
+### Resume Builder
+
+A complete, guided editing workflow covering:
+
+- Personal details
+- Professional summary
+- Work experience
 - Education
 - Skills
-- Projects
-- Preview Resume
-- Resume Sharing
+- Theme customization
+- Live preview
+
+### Multi-Resume Management
+
+Each user can create and manage multiple resumes. Every resume has its own unique ID, title, content, and theme color, independent of the others.
+
+### Customization
+
+- Multiple theme colors, consistently applied across preview sections, headings, and skill indicators
+- Visual resume cards on the dashboard
+
+### Live Preview
+
+The editor and preview share the same resume state, so every update to personal details, summary, experience, education, or skills is reflected instantly.
+
+### Download & Share
+
+- Download via the browser print workflow
+- Share via the Web Share API
+- View any resume through a dedicated public display route
+
+### Authentication & Authorization
+
+Clerk handles authentication end-to-end. The backend verifies every request via Clerk's Express middleware and scopes all resume data to the authenticated user's Clerk ID.
+
+### AI Usage Protection
+
+A server-enforced quota of **5 AI generations per user per UTC day**, shared across summary and experience generation, prevents uncontrolled AI usage.
 
 ---
 
-## 🎨 Modern User Interface
-
-- Responsive design
-- Clean dashboard
-- Reusable UI components
-- Beautiful resume templates
-- Tailwind CSS styling
-- shadcn/ui components
-
----
-
-## 💾 Backend Features
-
-- Resume persistence
-- Media management
-- REST API
-- Content management using Strapi
-- PostgreSQL database (Neon)
-
----
-
-## ⚡ Performance
-
-- Fast Vite development server
-- Optimized production build
-- Efficient API communication
-- Lazy UI rendering
-- Minimal bundle size
-
----
-
-# 🎯 Project Goals
-
-The primary objectives of ResumeFlow are:
-
-- Reduce the time required to create professional resumes.
-- Improve resume quality using AI-assisted writing.
-- Generate ATS-friendly content suitable for modern hiring systems.
-- Provide an intuitive editing experience.
-- Enable resume sharing through public links.
-- Showcase modern frontend architecture and AI integration.
-
-This project also serves as a portfolio-quality demonstration of modern web development practices including React, AI integration, REST APIs, and headless CMS architecture.
-
----
-
-# 🛠 Technology Stack
-
-## Frontend
-
-| Technology      | Purpose             |
-| --------------- | ------------------- |
-| React 19        | User Interface      |
-| Vite            | Build Tool          |
-| React Router    | Client-side Routing |
-| Tailwind CSS v4 | Styling             |
-| shadcn/ui       | UI Components       |
-| Axios           | API Requests        |
-| Sonner          | Notifications       |
-| React Hook Form | Forms               |
-| HTML2PDF        | Resume Export       |
-
----
-
-## Backend
-
-| Technology | Purpose            |
-| ---------- | ------------------ |
-| Strapi 5   | Headless CMS       |
-| PostgreSQL | Database           |
-| Neon       | Cloud Database     |
-| REST API   | Data Communication |
-
----
-
-## AI
-
-| Technology              | Purpose                   |
-| ----------------------- | ------------------------- |
-| Google Gemini 2.5 Flash | Resume Content Generation |
-| Google GenAI SDK        | AI Integration            |
-
----
-
-## Development Tools
-
-- PNPM
-- ESLint
-- Git
-- GitHub
-- VS Code
-
----
-
-# 🏗 Architecture Overview
-
-ResumeFlow follows a modern client-server architecture.
-
-```text
-                     +----------------------+
-                     |     React Client     |
-                     |      (Vite App)      |
-                     +----------+-----------+
-                                |
-                                |
-                       Axios REST API
-                                |
-                                |
-               +----------------+----------------+
-               |                                 |
-               |            Strapi API           |
-               |                                 |
-               +---------+---------------+--------+
-                         |               |
-                         |               |
-               PostgreSQL Database    Gemini AI
-                    (Neon)            (Google)
-```
-
----
-
-## High-Level Components
+## Tech Stack
 
 ### Frontend
 
-Responsible for:
+| Technology           | Purpose                  |
+| -------------------- | ------------------------ |
+| React 19             | UI layer                 |
+| Vite                 | Build tool & dev server  |
+| React Router         | Client-side routing      |
+| Tailwind CSS v4      | Styling                  |
+| shadcn/ui            | UI primitives            |
+| Axios                | HTTP client              |
+| Clerk React          | Authentication           |
+| Sonner               | Toast notifications      |
+| Lucide React         | Icons                    |
+| React Simple WYSIWYG | Rich text editing        |
+| React Web Share      | Native share integration |
+| React Rating         | Skill rating input       |
 
-- User Interface
-- Form Management
-- Resume Editing
-- AI Requests
-- Resume Preview
+### Backend
+
+| Technology    | Purpose                    |
+| ------------- | -------------------------- |
+| Node.js       | Runtime                    |
+| Express 5     | HTTP API                   |
+| Clerk Express | Authentication middleware  |
+| Prisma 7      | ORM                        |
+| PostgreSQL    | Relational database        |
+| CORS          | Cross-origin configuration |
+| dotenv        | Environment configuration  |
+
+### AI
+
+| Technology       | Purpose                   |
+| ---------------- | ------------------------- |
+| Google GenAI SDK | Gemini API integration    |
+| Gemini Flash     | Resume content generation |
+
+### Tooling
+
+PNPM · PNPM Workspaces · ESLint · Git
 
 ---
 
-### Strapi Backend
+## Architecture
 
-Responsible for:
+ResumeFlow follows a client-server architecture with clear boundaries between the frontend, API, persistence layer, and AI provider.
 
-- Resume CRUD
-- Database Operations
-- Content Storage
-- API Endpoints
+```
+                    ┌───────────────────┐
+                    │       User        │
+                    └─────────┬─────────┘
+                              │
+                              ▼
+                    ┌───────────────────┐
+                    │  React + Vite     │
+                    │    Frontend       │
+                    └─────────┬─────────┘
+                              │
+                          Axios API
+                              │
+                              ▼
+                    ┌───────────────────┐
+                    │   Express API     │
+                    │     Server        │
+                    └────┬─────────┬────┘
+                         │         │
+                    Clerk Auth     │
+                         │         │
+              ┌──────────┴───┐  ┌──┴──────────────┐
+              ▼               │  ▼                 │
+     ┌──────────────────┐    │ ┌──────────────────┐
+     │   PostgreSQL      │   │ │  Google Gemini    │
+     │   Database         │   │ │       AI          │
+     └──────────────────┘    │ └──────────────────┘
+```
+
+The backend itself follows a layered request pipeline:
+
+```
+HTTP Request → Routes → Middleware → Controllers → Services → Prisma → PostgreSQL
+```
+
+- **Routes** define API boundaries and authentication requirements.
+- **Middleware** validates the authenticated Clerk session.
+- **Controllers** orchestrate the HTTP request/response cycle.
+- **Services** hold reusable business logic (AI generation, usage tracking).
+- **Prisma** provides typed, transactional database access.
 
 ---
 
-### Google Gemini
-
-Responsible for:
-
-- Resume Summary Generation
-- Experience Bullet Generation
-- ATS-friendly Writing Assistance
-
----
-
-### Neon PostgreSQL
-
-Responsible for:
-
-- Resume Storage
-- User Data
-- Resume Sections
-
----
-
-# 🔄 Application Workflow
+## Application Workflow
 
 ```mermaid
 flowchart LR
-
-A[User Opens Application]
-
-A --> B[Create Resume]
-
-B --> C[Enter Personal Details]
-
-C --> D[Generate AI Summary]
-
-D --> E[Generate Experience]
-
-E --> F[Edit Resume]
-
-F --> G[Save to Strapi]
-
-G --> H[Stored in Neon PostgreSQL]
-
-H --> I[Preview Resume]
-
-I --> J[Share Resume]
-
-I --> K[Download PDF]
+    A[User Opens ResumeFlow] --> B[Authenticate with Clerk]
+    B --> C[Open Dashboard]
+    C --> D[Create Resume]
+    D --> E[Enter Personal Details]
+    E --> F[Generate AI Summary]
+    F --> G[Add Experience]
+    G --> H[Generate AI Experience Content]
+    H --> I[Add Education and Skills]
+    I --> J[Customize Theme]
+    J --> K[Preview Resume]
+    K --> L[Download or Share]
 ```
 
 ---
 
-# 🏛 System Design
-
-```mermaid
-graph TD
-
-User
-
-User --> React
-
-React --> ReactRouter
-React --> AIService
-React --> Axios
-
-Axios --> Strapi
-
-Strapi --> PostgreSQL
-
-AIService --> Gemini
-
-Gemini --> React
-```
-
----
-
-## AI Content Generation Flow
-
-```mermaid
-sequenceDiagram
-
-participant User
-participant React
-participant Gemini
-participant Strapi
-participant Database
-
-User->>React: Enter Job Title
-
-React->>Gemini: Generate Summary
-
-Gemini-->>React: JSON Response
-
-React->>User: Display Suggestions
-
-User->>React: Select Summary
-
-React->>Strapi: Save Resume
-
-Strapi->>Database: Store Resume
-
-Database-->>Strapi: Success
-
-Strapi-->>React: Resume Saved
-```
-
----
-
----
-
-# 📁 Project Structure
+## Project Structure
 
 ```text
 ResumeFlow/
+├── public/
+│   ├── cv.png
+│   ├── favicon.svg
+│   ├── icons.svg
+│   └── logo.svg
 │
-├── client/                    # React + Vite Frontend
-│   ├── public/                # Images & Static Assets
-│   ├── src/
-│   │   ├── components/        # Reusable UI Components
-│   │   ├── constants/         # AI Prompts & Constants
-│   │   ├── context/           # React Context API
-│   │   ├── dashboard/         # Resume Builder Pages
-│   │   ├── home/              # Landing Page
-│   │   ├── lib/               # Utility Functions
-│   │   ├── service/           # API & AI Services
-│   │   ├── view-resume/       # Public Resume View
-│   │   ├── App.jsx
-│   │   └── main.jsx
-│   │
-│   ├── package.json
-│   └── vite.config.js
-│
-├── server/                    # Strapi Backend
-│   ├── config/
-│   ├── database/
-│   ├── src/
-│   │   ├── api/
+├── src/
+│   ├── auth/sign-in/
+│   ├── components/
+│   │   ├── custom/
+│   │   └── ui/
+│   ├── context/
+│   │   └── ResumeInfoContext.jsx
+│   ├── dashboard/
 │   │   ├── components/
-│   │   ├── extensions/
-│   │   └── index.js
-│   │
-│   ├── package.json
-│   └── .env
+│   │   ├── resume/
+│   │   │   ├── components/
+│   │   │   └── [resumeId]/edit/
+│   │   └── index.jsx
+│   ├── hooks/
+│   │   ├── useAiUsage.js
+│   │   └── useAxiosClient.js
+│   ├── home/
+│   ├── individualresume/[resumeId]/display/
+│   ├── prompts/
+│   │   ├── experience.prompt.js
+│   │   └── summary.prompt.js
+│   ├── services/
+│   │   ├── GlobalApi.js
+│   │   └── PublicApi.js
+│   ├── App.jsx
+│   ├── main.jsx
+│   └── index.css
 │
+├── server/
+│   ├── prisma/
+│   │   ├── migrations/
+│   │   └── schema.prisma
+│   └── src/
+│       ├── controllers/
+│       │   ├── ai.controller.js
+│       │   └── resume.controller.js
+│       ├── db/prisma.js
+│       ├── middleware/auth.middleware.js
+│       ├── routes/
+│       │   ├── ai.routes.js
+│       │   └── resume.routes.js
+│       ├── services/
+│       │   ├── ai-usage.service.js
+│       │   └── gemini.service.js
+│       └── server.js
+│
+├── package.json
+├── pnpm-workspace.yaml
+├── vite.config.js
 └── README.md
 ```
 
-The project is intentionally separated into frontend and backend applications to provide clear boundaries between UI rendering, AI interactions, and persistent data storage.
-
 ---
 
-# 🧩 Frontend Architecture
+## Authentication Flow
 
-The frontend follows a component-driven architecture using React.
-
-```text
-src
-│
-├── components
-│      ├── ui
-│      ├── forms
-│      ├── preview
-│      └── shared
-│
-├── dashboard
-│      ├── add-resume
-│      ├── edit-resume
-│      └── components
-│
-├── service
-│      ├── GlobalApi.js
-│      ├── AIModel.js
-│      └── prompts.js
-│
-├── context
-│      └── ResumeInfoContext.jsx
-│
-└── view-resume
-```
-
-### Responsibilities
-
-### Dashboard
-
-Responsible for creating and editing resumes.
-
----
-
-### Components
-
-Reusable UI used across multiple pages.
-
----
-
-### Context API
-
-Provides centralized resume state throughout the application.
-
----
-
-### Services
-
-Contains API requests and Google Gemini integration.
-
----
-
-### View Resume
-
-Responsible for rendering the final resume for sharing or downloading.
-
----
-
-# 🗄 Backend Architecture
-
-The backend is powered by **Strapi 5**, serving as a Headless CMS.
-
-Responsibilities include:
-
-- Resume CRUD operations
-- Database persistence
-- REST API
-- Content validation
-- Media handling
-
-```text
-React Client
-      │
- REST API
-      │
- Strapi
-      │
- PostgreSQL (Neon)
-```
-
-Using Strapi significantly reduced backend boilerplate while allowing the project to focus on frontend experience and AI functionality.
-
----
-
-# 🤖 AI Integration
-
-ResumeFlow integrates **Google Gemini 2.5 Flash** to generate professional resume content.
-
-Current AI capabilities include:
-
-- Professional summaries
-- Experience bullet points
-
-Prompt engineering is used to ensure:
-
-- ATS-friendly writing
-- Consistent formatting
-- HTML generation
-- Structured JSON responses
-- Professional language
-- Resume best practices
-
-Example workflow:
-
-```mermaid
-flowchart LR
-
-A[User enters Job Title]
-
-A --> B[Prompt Builder]
-
-B --> C[Gemini 2.5 Flash]
-
-C --> D[Generated Content]
-
-D --> E[User Reviews]
-
-E --> F[Save to Resume]
-```
-
-Unlike simple text generation, ResumeFlow uses carefully engineered prompts that produce deterministic outputs suitable for direct rendering within the application.
-
----
-
-# 📦 Data Flow
+Authentication is handled entirely by Clerk.
 
 ```mermaid
 sequenceDiagram
+    participant User
+    participant React
+    participant Clerk
+    participant Express
+    participant Database
 
-participant User
-participant React
-participant Context
-participant AI
-participant API
-participant Strapi
-participant Database
-
-User->>React: Edit Resume
-
-React->>Context: Update State
-
-Context-->>React: Updated Resume
-
-React->>AI: Generate Content
-
-AI-->>React: AI Response
-
-React->>API: Save Resume
-
-API->>Strapi: PUT / POST
-
-Strapi->>Database: Store Data
-
-Database-->>Strapi: Success
-
-Strapi-->>React: Updated Resume
+    User->>React: Sign In
+    React->>Clerk: Authenticate
+    Clerk-->>React: Authenticated Session
+    React->>Express: API Request
+    Express->>Clerk: Validate Session
+    Clerk-->>Express: userId
+    Express->>Database: Query User-Owned Data
+    Database-->>Express: Data
+    Express-->>React: API Response
 ```
 
-This architecture ensures that generated AI content is first reviewed by the user before being persisted to the database.
+The frontend attaches the Clerk session token to every request:
 
----
-
-# 🚀 Getting Started
-
-## Prerequisites
-
-Before running the project locally, ensure the following are installed:
-
-- Node.js 20+
-- PNPM
-- Git
-- PostgreSQL (or a Neon account)
-- Google AI Studio API Key
-
----
-
-## Clone Repository
-
-```bash
-git clone https://github.com/Ayyah-Coded/resume-flow.git
-
-cd resume-flow
+```http
+Authorization: Bearer <token>
 ```
 
+The backend extracts and verifies the authenticated user's identity via Clerk's Express middleware, and every resume operation is scoped to that `clerkUserId`.
+
 ---
 
-## Install Frontend
+## AI Content Generation
 
-```bash
+AI generation runs entirely on the backend, keeping the Gemini API key out of the browser.
 
-pnpm install
+```
+React → AI Controller → AI Usage Service → Gemini Service → Gemini API
 ```
 
----
+### Summary Generation
 
-## Install Backend
+```mermaid
+sequenceDiagram
+    participant User
+    participant React
+    participant API
+    participant Usage
+    participant Gemini
 
-```bash
-cd ../server
-
-pnpm install
+    User->>React: Enter Job Title
+    React->>API: POST /api/ai/summary
+    API->>Usage: Reserve AI Usage
+    Usage-->>API: Reservation Successful
+    API->>Gemini: Generate Summaries
+    Gemini-->>API: Structured JSON
+    API->>Usage: Read Usage
+    API-->>React: Summaries + Usage
+    React->>User: Display Suggestions
 ```
 
+Given a job title, the AI returns three summary variations:
+
+| Level  | Purpose                              |
+| ------ | ------------------------------------ |
+| Entry  | Early-career positioning             |
+| Mid    | Experienced professional positioning |
+| Senior | Advanced professional positioning    |
+
+### Experience Generation
+
+Experience content is returned as formatted HTML (`<ul><li>...</li></ul>`) and rendered directly inside the rich text editor, where it can be reviewed and edited before saving. Generation constraints include:
+
+- ATS-friendly, action-oriented language
+- 5–7 bullet points
+- No invented companies
+- No repetition of the job title
+- No references to seniority level
+
 ---
 
-## Start Development Servers
+## AI Usage Quota
 
-Frontend
-
-```bash
-pnpm dev
+```
+Daily Limit = 5 generations per user (UTC)
 ```
 
-Backend
+Usage is tracked per `clerkUserId + usageDate`.
 
-```bash
-pnpm develop
+```mermaid
+flowchart TD
+    A[AI Request] --> B[Validate Input]
+    B --> C[Reserve AI Usage]
+    C --> D{Quota Available?}
+    D -- No --> E[429 Daily Limit Reached]
+    D -- Yes --> F[Generate AI Content]
+    F --> G{Generation Successful?}
+    G -- No --> H[Refund Reserved Usage]
+    G -- Yes --> I[Return Content + Usage]
 ```
 
-The frontend will typically run on:
+**Reservation strategy:**
 
-```text
-http://localhost:5173
+1. Create the daily usage record if it doesn't exist.
+2. Attempt to increment the usage count.
+3. The increment only succeeds while the count is below the daily limit.
+4. AI generation proceeds only after a successful reservation.
+5. If generation fails, the reserved usage is refunded — so failed requests never permanently consume quota.
+
+---
+
+## Data Model
+
+```mermaid
+erDiagram
+    RESUME ||--o{ EXPERIENCE : contains
+    RESUME ||--o{ EDUCATION : contains
+    RESUME ||--o{ SKILL : contains
+
+    RESUME {
+        string id
+        string resumeId
+        string title
+        string clerkUserId
+        string firstName
+        string lastName
+        string jobTitle
+        string summary
+        string themeColor
+    }
+    EXPERIENCE {
+        string id
+        string title
+        string companyName
+        string city
+        string state
+        string workSummary
+        string resumeId
+    }
+    EDUCATION {
+        string id
+        string universityName
+        string degree
+        string major
+        string description
+        string resumeId
+    }
+    SKILL {
+        string id
+        string name
+        int rating
+        string resumeId
+    }
+    AI_USAGE {
+        string id
+        string clerkUserId
+        date usageDate
+        int count
+    }
 ```
 
-while Strapi runs on:
+**Design decisions:**
 
-```text
-http://localhost:1337
+- **Separate resume sections** — Experiences, education, and skills are stored as distinct relational models, giving clear data boundaries, independent section updates, and cascade deletion.
+- **Ownership indexing** — The `Resume` model indexes `clerkUserId` for efficient per-user queries.
+- **Daily AI uniqueness** — `AiUsage` enforces a composite unique constraint on `clerkUserId + usageDate`, guaranteeing exactly one usage record per user per day.
+
+---
+
+## API Reference
+
+### Resume Endpoints
+
+| Method   | Endpoint                             | Description                           |
+| -------- | ------------------------------------ | ------------------------------------- |
+| `POST`   | `/api/resumes`                       | Create a resume                       |
+| `GET`    | `/api/resumes`                       | List the authenticated user's resumes |
+| `GET`    | `/api/resumes/:resumeId`             | Get a single resume                   |
+| `PATCH`  | `/api/resumes/:resumeId`             | Update resume details                 |
+| `PUT`    | `/api/resumes/:resumeId/skills`      | Replace skills                        |
+| `PUT`    | `/api/resumes/:resumeId/experiences` | Replace experiences                   |
+| `PUT`    | `/api/resumes/:resumeId/education`   | Replace education                     |
+| `DELETE` | `/api/resumes/:resumeId`             | Delete a resume                       |
+
+### AI Endpoints
+
+| Method | Endpoint             | Description                 |
+| ------ | -------------------- | --------------------------- |
+| `POST` | `/api/ai/summary`    | Generate resume summaries   |
+| `POST` | `/api/ai/experience` | Generate experience content |
+| `GET`  | `/api/ai/usage`      | Get current AI usage        |
+
+All API calls are centralized through `src/services/GlobalApi.js`, with the Axios client injected in:
+
+```js
+const api = GlobalApi(axiosClient);
 ```
 
----
-
-# ⚙ Environment Variables
-
-## Frontend (.env)
-
-```env
-VITE_API_BASE_URL=http://localhost:1337/api
-
-VITE_BASE_URL=http://localhost:5173
-
-VITE_GOOGLE_API_KEY=your_google_ai_api_key
-```
-
----
-
-## Backend (.env)
-
-```env
-HOST=0.0.0.0
-
-PORT=1337
-
-DATABASE_CLIENT=postgres
-
-DATABASE_URL=your_neon_connection_string
-```
-
-> **Important:** Never commit your `.env` files or API keys to version control. Store sensitive credentials securely and use environment variables for all secrets.
-
----
-
-# 💻 Running the Application
-
-Once both the frontend and backend have been configured, start each application in separate terminals.
-
-## Start Strapi
-
-```bash
-cd server
-
-pnpm develop
-```
-
-Expected output:
-
-```text
-Server running at:
-http://localhost:1337
-```
-
----
-
-## Start React
-
-```bash
-
-pnpm dev
-```
-
-Expected output:
-
-```text
-Local:
-http://localhost:5173
-```
-
----
-
-## Application Flow
-
-1. Launch the Strapi backend.
-2. Start the React frontend.
-3. Create a new resume.
-4. Fill in your personal information.
-5. Generate AI-assisted content.
-6. Save your resume.
-7. Preview or share the completed resume.
-
----
-
-# 🧠 AI Prompt Engineering
-
-One of the core features of ResumeFlow is its prompt engineering strategy.
-
-Instead of asking Gemini generic questions, the application uses carefully designed prompts that produce structured, deterministic responses suitable for immediate use inside the application.
-
-Current prompts include:
-
-- Resume Summary Generation
-- Experience Bullet Generation
-
-### Experience Prompt
-
-The AI is instructed to:
-
-- Generate ATS-friendly bullet points.
-- Begin each bullet with strong action verbs.
-- Focus on accomplishments and measurable impact.
-- Return valid HTML only.
-- Avoid Markdown and unnecessary explanations.
-
-Example output:
-
-```html
-<ul>
-  <li>
-    Developed responsive web applications using React and modern JavaScript.
-  </li>
-  <li>
-    Collaborated with cross-functional teams to deliver scalable software
-    solutions.
-  </li>
-  <li>Optimized application performance, reducing page load time by 35%.</li>
-</ul>
-```
-
----
-
-### Summary Prompt
-
-The summary prompt generates multiple professional summaries tailored for different career stages.
-
-Generated levels include:
-
-- Entry Level
-- Mid Level
-- Senior Level
-
-The response is returned as structured JSON, allowing the application to present multiple suggestions for users to choose from.
-
-Example:
-
-```json
-[
-  {
-    "experience_level": "Entry Level",
-    "summary": "..."
-  },
-  {
-    "experience_level": "Mid Level",
-    "summary": "..."
-  },
-  {
-    "experience_level": "Senior Level",
-    "summary": "..."
-  }
-]
-```
-
-This structured approach significantly improves reliability compared to free-form AI responses.
-
----
-
-# 🌐 REST API Overview
-
-The frontend communicates with Strapi using REST APIs through a centralized Axios client.
-
-Typical operations include:
-
-| Method | Purpose                 |
-| ------ | ----------------------- |
-| GET    | Retrieve resume details |
-| POST   | Create new resume       |
-| PUT    | Update resume sections  |
-| DELETE | Remove resumes          |
-
-Example request flow:
-
-```text
-React Component
-
-        │
-
-        ▼
-
-GlobalApi.js
-
-        │
-
-        ▼
-
-Axios Client
-
-        │
-
-        ▼
-
-Strapi REST API
-
-        │
-
-        ▼
-
-PostgreSQL
-```
-
-Centralizing API logic keeps components clean and improves maintainability.
-
----
-
-# 🎨 User Interface
-
-The frontend emphasizes simplicity, responsiveness, and accessibility.
-
-Key UI features include:
-
-- Responsive Layout
-- Modern Dashboard
-- Reusable Components
-- Clean Typography
-- AI Suggestion Cards
-- Resume Preview
-- Loading States
-- Toast Notifications
-- Form Validation
-
-The application is built using:
-
-- Tailwind CSS
-- shadcn/ui
-- Lucide React Icons
-
-This combination provides a consistent and professional user experience while maintaining high performance.
-
----
-
-# ⚡ Performance Optimizations
-
-Several techniques were implemented to improve responsiveness and maintainability.
-
-## Frontend
-
-- Vite for extremely fast development builds.
-- Component-based architecture.
-- Context API for centralized state management.
-- Reusable UI components.
-- Optimized API requests.
-- Minimal bundle size.
-
----
-
-## Backend
-
-- Headless CMS architecture.
-- PostgreSQL indexing through Neon.
-- RESTful API design.
-- Efficient content management.
-
----
-
-## AI
-
-Prompt engineering reduces hallucinations by:
-
-- Constraining response formats.
-- Returning JSON instead of free text.
-- Returning HTML where appropriate.
-- Enforcing ATS-friendly writing patterns.
-
-These techniques allow AI responses to be consumed directly by the application with minimal post-processing.
-
----
-
-# 🔒 Security Considerations
-
-Although ResumeFlow is a portfolio project, several security best practices were followed.
-
-### Environment Variables
-
-Sensitive credentials such as:
-
-- Google AI API Key
-- Database Connection String
-- Strapi Secrets
-
-are stored using environment variables instead of being hardcoded.
-
----
-
-### API Communication
-
-- Centralized Axios configuration
-- JSON payload validation
-- Proper error handling
-- Async request management
-
----
-
-### AI Safety
-
-Prompt outputs are constrained through explicit formatting instructions, reducing malformed responses and making JSON parsing more reliable.
-
----
-
-### Future Improvements
-
-Potential production enhancements include:
-
-- Authorization & Ownership
-- Rate Limiting
-- Request Validation
-- Server-side AI Proxy
-- Resume Versioning
-- Audit Logging
-
-These improvements would further strengthen the application's scalability and security in a production environment.
-
----
-
-# 📈 Challenges & Lessons Learned
-
-Building ResumeFlow involved solving several real-world engineering challenges that extended beyond simply creating a CRUD application.
-
-## AI Prompt Engineering
-
-One of the biggest challenges was designing prompts that consistently generated high-quality, ATS-friendly resume content.
-
-Rather than relying on generic prompts, structured prompt engineering techniques were implemented to:
-
-- Produce deterministic outputs.
-- Return valid HTML or JSON.
-- Minimize AI hallucinations.
-- Improve response consistency.
-- Generate content suitable for direct rendering within the application.
+This keeps endpoint definitions in one place instead of scattered across the UI.
 
 ---
 
 ## State Management
 
-Managing resume data across multiple editing sections required careful synchronization between local component state and global application state.
+ResumeFlow uses React Context to share resume state between the editor and the preview:
 
-Using React Context API allowed each form section to remain modular while ensuring the entire resume stayed synchronized throughout the editing experience.
+```
+EditResume
+  └── ResumeInfoContext.Provider
+        ├── FormSection
+        │     ├── PersonalDetail
+        │     ├── Summary
+        │     ├── Experience
+        │     ├── Education
+        │     └── Skills
+        └── ResumePreview
+```
 
----
+Every form update flows through the shared context and is reflected immediately in the preview:
 
-## Backend Integration
+```
+Form Input → ResumeInfoContext → Resume Preview
+```
 
-Integrating a headless CMS introduced additional considerations such as:
+AI usage state is also centralized within the editing workflow, so the Summary and Experience sections always display a consistent remaining quota.
 
-- REST API communication
-- Content modeling
-- Data persistence
-- Error handling
-- Environment configuration
+### Rich Text Experience Editing
 
-This provided valuable experience working with modern API-driven architectures.
+The experience editor (`react-simple-wysiwyg`) is fully controlled by parent state, so manually typed and AI-generated content follow the same update path — there's no separate source of truth to drift out of sync:
 
----
+```
+Experience State → RichTextEditor value → WYSIWYG Editor → onChange → Experience State
+```
 
-## Performance
+### Resume Preview
 
-The application was optimized by:
-
-- Using Vite for lightning-fast development builds.
-- Creating reusable UI components.
-- Centralizing API logic.
-- Separating concerns between frontend, backend, and AI services.
-
-These architectural decisions resulted in a clean and maintainable codebase.
-
----
-
-# 🚀 Future Improvements
-
-Although ResumeFlow is fully functional, several enhancements are planned to further improve the user experience.
-
-### Resume Features
-
-- Multiple Resume Templates
-- Resume Themes
-- Drag-and-Drop Section Reordering
-- Resume Version History
-- Custom Fonts
-- Custom Color Schemes
+The preview is composed of independent section components — `PersonalDetailPreview`, `SummaryPreview`, `ExperiencePreview`, `EducationalPreview`, and `SkillsPreview` — each reading from the shared context, with theme color applied consistently across headings, borders, and skill indicators.
 
 ---
 
-### AI Features
+## Security
 
-- AI Cover Letter Generator
-- Resume ATS Score Analyzer
-- Resume Improvement Suggestions
-- Job Description Matching
-- Keyword Optimization
-- Interview Question Generator
+- **API key protection** — The Gemini API key is only ever accessed server-side; it's never exposed to the browser.
+- **Authentication-aware data access** — Every resume request is protected by Clerk's authentication middleware and scoped to the requesting user's `clerkUserId`. Ownership is verified before any read or write.
+- **Input validation** — The backend validates required fields (resume titles, job titles, position titles) and array-shaped resume sections before touching the database.
+- **Server-enforced AI quota** — Usage limits are enforced entirely on the backend; the frontend is never trusted to self-limit.
 
 ---
 
-### Export Options
+## Getting Started
 
-- High-quality PDF Export
-- DOCX Export
-- Printable Resume Templates
+### Prerequisites
 
----
+- Node.js 20+
+- PNPM
+- PostgreSQL
+- Git
+- A Clerk application
+- A Google Gemini API key
 
-### Technical Improvements
+### Clone & Install
 
-- TypeScript Migration
-- Unit & Integration Testing
-- CI/CD Pipeline
-- Docker Support
-- Cloud Deployment
-- Backend Authentication
-- Server-side AI Proxy
-- Rate Limiting
-- Request Validation
+```bash
+git clone <your-repository-url>
+cd ResumeFlow
 
----
+# Frontend dependencies
+pnpm install
 
-# 💡 Key Takeaways
-
-ResumeFlow demonstrates practical experience with modern full-stack web development and AI integration.
-
-Through this project, I gained hands-on experience with:
-
-- Designing scalable React applications.
-- Building reusable component architectures.
-- Managing complex application state.
-- Integrating AI into real-world workflows.
-- Prompt engineering for structured AI responses.
-- Working with REST APIs.
-- Using Strapi as a headless CMS.
-- Persisting data with PostgreSQL (Neon).
-- Building responsive user interfaces with Tailwind CSS.
-- Following modern JavaScript best practices.
-
-Beyond the technical implementation, this project reinforced the importance of clean architecture, maintainable code, and thoughtful user experience design.
+# Backend dependencies
+cd server
+pnpm install
+```
 
 ---
 
-# 👨‍💻 Author
+## Environment Variables
 
-**Yahaya Hayatullahi**
+### Frontend — `.env` (project root)
 
-A Full-Stack Software Engineer passionate about building modern, scalable web applications and mobile apps.
+```env
+VITE_API_BASE_URL=http://localhost:5000
+VITE_BASE_URL=http://localhost:5173
+VITE_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
+```
 
-### Connect with me
+### Backend — `server/.env`
 
-- GitHub: **https://github.com/Ayyah-Coded**
-- LinkedIn: **https://linkedin.com/in/yourprofile**
-- Portfolio: **https://yourportfolio.com**
+```env
+PORT=5000
+CLIENT_URL=http://localhost:5173
+DATABASE_URL=your_postgresql_connection_string
+DIRECT_URL=your_direct_postgresql_connection_string
+GEMINI_API_KEY=your_gemini_api_key
+```
+
+> **Important:** Never commit `.env` files or API keys to version control.
 
 ---
 
-# 📄 License
+## Running Locally
 
-This project is licensed under the **MIT License**.
+### 1. Set up the database
 
-You are free to use, modify, and distribute this project in accordance with the terms of the license.
+```bash
+cd server
+pnpm exec prisma migrate dev
+pnpm exec prisma generate
+```
 
-See the **LICENSE** file for additional details.
+### 2. Start the backend
+
+```bash
+# from server/
+pnpm dev
+```
+
+Runs at `http://localhost:5000` (health check at `/health`).
+
+### 3. Start the frontend
+
+```bash
+# from the project root
+pnpm dev
+```
+
+Runs at `http://localhost:5173`.
 
 ---
+
+## Production Build
+
+```bash
+# Build frontend assets
+pnpm build
+
+# Preview the production build locally
+pnpm preview
+```
+
+Start the backend in production:
+
+```bash
+node src/server.js
+```
+
+For real deployments, inject environment variables through your hosting platform rather than committing them to the repository.
+
+---
+
+## Scripts Reference
+
+### Frontend
+
+| Command        | Purpose                      |
+| -------------- | ---------------------------- |
+| `pnpm dev`     | Start Vite dev server        |
+| `pnpm build`   | Build production assets      |
+| `pnpm lint`    | Run ESLint                   |
+| `pnpm preview` | Preview the production build |
+
+### Backend
+
+| Command    | Purpose                                   |
+| ---------- | ----------------------------------------- |
+| `pnpm dev` | Start Express server with Node watch mode |
+
+---
+
+## Engineering Highlights
+
+1. **Server-side AI integration** — AI generation is isolated behind a backend service layer (`AI Controller → Gemini Service`), keeping credentials off the client and creating a clean boundary between HTTP handling and AI logic.
+2. **Transactional AI usage reservation** — Quota is reserved before generation and refunded on failure, which is more reliable than incrementing a counter after the fact.
+3. **Centralized API client** — A reusable Axios hook automatically resolves the base URL, retrieves the Clerk token, and attaches the authorization header.
+4. **Aggregate resume updates** — Resume section updates replace the relevant child records inside a database transaction, so each update is atomic.
+5. **Controlled rich text editing** — The WYSIWYG editor is driven entirely by parent state, keeping manual and AI-generated content on the same update path.
+6. **Shared AI usage state** — A dedicated `useAiUsage` hook avoids duplicating quota-fetching logic across AI-enabled components.
+7. **Relational data modeling** — Resume sections are modeled as relational child records rather than one large JSON blob, giving a clearer domain model and real database-level relationships via Prisma.
+
+---
+
+## Technical Tradeoffs
+
+**React Context vs. a global state library**
+Shared state is currently limited to the active resume and AI usage. Introducing Redux (or similar) would add complexity without meaningful benefit at this scale.
+
+**Replacing child records vs. incremental updates**
+Resume sections (experience, education, skills) are replaced wholesale on each section update.
+
+- _Benefit:_ simple synchronization, easy handling of additions/removals, predictable persistence.
+- _Tradeoff:_ more database writes than granular row-level updates — an acceptable cost given the current scope.
+
+**AI generation on the backend, not the client**
+AI requests could technically be made directly from the browser, but running them server-side protects the API key, centralizes quota enforcement, keeps a consistent AI abstraction, and allows prompt/model changes without touching the frontend.
+
+---
+
+## Roadmap
+
+- PDF generation via a dedicated server-side renderer
+- Additional resume templates
+- Drag-and-drop section reordering
+- Resume version history and duplication
+- Job description analysis with AI-powered ATS scoring and keyword recommendations
+- Server-side public resume access
+- Resume analytics
+- Background AI generation jobs
+- Redis-backed rate limiting
+- Automated integration testing and end-to-end testing with Playwright
+- Production observability and structured logging
+
+---
+
+## What This Project Demonstrates
+
+ResumeFlow is a practical demonstration of full-stack engineering across:
+
+React architecture · Vite tooling · Express API design · Clerk authentication · PostgreSQL data modeling · Prisma ORM · Transactional database operations · Google Gemini integration · AI prompt engineering · Server-side credential protection · Usage quota enforcement · React Context state management · Controlled component design · Rich text editor integration · REST API consumption · Responsive UI development
+
+More than a single AI API call, it demonstrates the surrounding infrastructure a real product needs:
+
+> **Authentication → Authorization → AI Generation → Quota Reservation → Failure Recovery → Persistence → User-Controlled Editing**
+
+---
+
+## License
+
+This project is licensed under the **ISC License**.
 
 <div align="center">
 
-### ⭐ If you found this project helpful, consider giving it a star!
+Built with React, Express, Prisma, PostgreSQL, Clerk, and Google Gemini.
 
-It helps others discover the project and supports future development.
-
-**Thank you for visiting ResumeFlow! 🚀**
+⭐ If you found this project interesting, consider giving it a star.
 
 </div>
